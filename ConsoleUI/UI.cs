@@ -19,7 +19,7 @@
                         break;
 
                     case "2":
-                        //SearchPersonByName();
+                        PersonSearchMenu.Execute();
                         break;
 
                     case "3":
