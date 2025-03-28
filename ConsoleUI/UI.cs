@@ -2,6 +2,7 @@
 {
     internal class UI
     {
+        private MovieSearchMenu _movieSearchMenu = new();
         public void printMenu()
         {
             while (true)
@@ -15,7 +16,7 @@
                 switch (choice)
                 {
                     case "1":
-                        MovieSearchMenu.Execute();
+                        _movieSearchMenu.Execute();
                         break;
 
                     case "2":
@@ -23,15 +24,19 @@
                         break;
 
                     case "3":
-                        //SearchPersonByName();
+                        Console.WriteLine("Not Implemented yet");
+                        Console.Write("Press any key to continue...");
+                        Console.ReadKey();
                         break;
 
                     case "4":
-                        //SearchPersonByName();
+                        Console.WriteLine("Not Implemented yet");
+                        Console.Write("Press any key to continue...");
+                        Console.ReadKey();
                         break;
 
                     case "5":
-                        //AddMovieToDB();
+                        AddMovieMenu.Execute();
                         break;
 
                     case "6":

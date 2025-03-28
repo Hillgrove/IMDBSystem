@@ -1,14 +1,16 @@
 ﻿using Data;
+using Data.Models;
 
 namespace ConsoleUI
 {
-    internal static class MovieSearchMenu
+    public class MovieSearchMenu
     {
-        private static int _pageSize = 10;
-        private static int _currentPage = 0;
-        private static List<string> _movies = new List<string>();
+        private int _pageSize = 10;
+        private int _currentPage = 0;
+        private List<Movie> _movies = new List<Movie>();
+        private MovieRepository _repository = new MovieRepository();
 
-        public static void Execute()
+        public void Execute()
         {
             while (true)
             {
@@ -22,7 +24,7 @@ namespace ConsoleUI
                     continue;
                 }
 
-                _movies = MockMovieDatabase.GetMovies(wildcard);
+                _movies = _repository.GetMovies(wildcard);
                 if (_movies.Count == 0)
                 {
                     if (!HandleNoMoviesFound()) return;
@@ -45,7 +47,7 @@ namespace ConsoleUI
             }
         }
 
-        private static void DisplayMenuHeader()
+        private void DisplayMenuHeader()
         {
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -54,19 +56,19 @@ namespace ConsoleUI
             Console.WriteLine();
         }
 
-        private static string GetSearchInput()
+        private string GetSearchInput()
         {
             Console.Write("Enter search parameter (e.g. \"The Godfather\"): ");
             return Console.ReadLine()?.Trim().ToLower() ?? "";
         }
 
-        private static void DisplayInvalidInputMessage()
+        private void DisplayInvalidInputMessage()
         {
             Console.WriteLine("\nInvalid input. Returning to menu...");
             Console.ReadKey();
         }
 
-        private static bool HandleNoMoviesFound()
+        private bool HandleNoMoviesFound()
         {
             Console.WriteLine("\nNo movies found with the given title.");
             Console.WriteLine();
@@ -76,7 +78,7 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private static void DisplayResultsPage(List<string> movies, string wildcard)
+        private void DisplayResultsPage(List<Movie> movies, string wildcard)
         {
             Console.Clear();
             int startIndex = _currentPage * _pageSize;
@@ -99,13 +101,13 @@ namespace ConsoleUI
             Console.WriteLine("[N] Next Page  [P] Previous Page  [B] Back to Search  [Q] Quit to Main Menu");
         }
 
-        private static string? GetNavigationInput()
+        private string? GetNavigationInput()
         {
             Console.Write("\nYour choice: ");
             return Console.ReadLine()?.Trim().ToLower();
         }
 
-        private static bool HandleNavigationChoice(string navChoice)
+        private bool HandleNavigationChoice(string navChoice)
         {
             if (int.TryParse(navChoice, out int selection))
             {
@@ -141,7 +143,7 @@ namespace ConsoleUI
             return false;
         }
 
-        private static void HandleMovieSelection(int selection)
+        private void HandleMovieSelection(int selection)
         {
                 Console.WriteLine($"\nYou selected: {_movies[selection - 1]}");
                 Console.Write("\nPress any key to return to the search menu...");

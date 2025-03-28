@@ -1,6 +1,6 @@
 ﻿namespace Data
 {
-    internal class PersonRepository
+    public class PersonRepository
     {
     }
 }
