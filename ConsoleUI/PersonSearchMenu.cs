@@ -5,11 +5,18 @@ namespace ConsoleUI
 {
     internal class PersonSearchMenu
     {
-        private static int _pageSize = 10;
-        private static int _currentPage = 0;
-        private static List<Name> _names = new List<Name>();
+        private int _pageSize = 10;
+        private int _currentPage = 0;
+        private List<Name> _names = new List<Name>();
 
-        public static void Execute()
+        private readonly INameRepository _repository;
+
+        public PersonSearchMenu(INameRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public void Execute()
         {
             while (true)
             {
@@ -23,7 +30,7 @@ namespace ConsoleUI
                     continue;
                 }
 
-                _names = NameRepository.GetPersons(wildcard);
+                _names = _repository.GetPersons(wildcard);
                 if (_names.Count == 0)
                 {
                     if (!HandleNoPersonsFound()) return;
@@ -46,7 +53,7 @@ namespace ConsoleUI
             }
         }
 
-        private static void DisplayMenuHeader()
+        private void DisplayMenuHeader()
         {
             Console.WriteLine();
             Console.WriteLine("=========================================================");
@@ -55,19 +62,19 @@ namespace ConsoleUI
             Console.WriteLine();
         }
 
-        private static string GetSearchInput()
+        private string GetSearchInput()
         {
             Console.Write("Enter search parameter (e.g. \"Keanu\"): ");
             return Console.ReadLine()?.Trim().ToLower() ?? "";
         }
 
-        private static void DisplayInvalidInputMessage()
+        private void DisplayInvalidInputMessage()
         {
             Console.WriteLine("\nInvalid input. Returning to menu...");
             Console.ReadKey();
         }
 
-        private static bool HandleNoPersonsFound()
+        private bool HandleNoPersonsFound()
         {
             Console.WriteLine("\nNo persons found with the given name.");
             Console.WriteLine();
@@ -77,7 +84,7 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private static void DisplayResultsPage(List<Name> persons, string wildcard)
+        private void DisplayResultsPage(List<Name> persons, string wildcard)
         {
             Console.Clear();
             int startIndex = _currentPage * _pageSize;
@@ -100,13 +107,13 @@ namespace ConsoleUI
             Console.WriteLine("[N] Next Page  [P] Previous Page  [B] Back to Search  [Q] Quit to Main Menu");
         }
 
-        private static string? GetNavigationInput()
+        private string? GetNavigationInput()
         {
             Console.Write("\nYour choice: ");
             return Console.ReadLine()?.Trim().ToLower();
         }
 
-        private static bool HandleNavigationChoice(string navChoice)
+        private bool HandleNavigationChoice(string navChoice)
         {
             if (int.TryParse(navChoice, out int selection))
             {
@@ -142,7 +149,7 @@ namespace ConsoleUI
             return false;
         }
 
-        private static void HandlePersonSelection(int selection)
+        private void HandlePersonSelection(int selection)
         {
             Console.WriteLine($"\nYou selected: {_names[selection - 1]}");
             Console.Write("\nPress any key to return to the search menu...");

@@ -8,7 +8,13 @@ namespace ConsoleUI
         private int _pageSize = 10;
         private int _currentPage = 0;
         private List<Title> _movies = new List<Title>();
-        private MovieRepository _repository = new MovieRepository();
+
+        private readonly IMovieRepository _repository;
+
+        public MovieSearchMenu(IMovieRepository repository)
+        {
+            _repository = repository;
+        }
 
         public void Execute()
         {

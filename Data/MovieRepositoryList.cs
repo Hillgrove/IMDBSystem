@@ -2,9 +2,15 @@
 
 namespace Data
 {
-    public class MovieRepository
+    public class MovieRepositoryList : IMovieRepository
     {
-        private static readonly List<IMDBType> _types = new List<IMDBType>
+        #region Singleton Pattern
+        private static readonly MovieRepositoryList _instance = new();
+        public static MovieRepositoryList Instance { get => _instance; }
+        private MovieRepositoryList() { }
+        #endregion
+
+        private readonly List<IMDBType> _types = new List<IMDBType>
         {
             new IMDBType { Id = 1, Name = "movie" },
             new IMDBType { Id = 2, Name = "short" },
@@ -19,7 +25,7 @@ namespace Data
             new IMDBType { Id = 11, Name = "videoGame" }
         };
 
-        private static readonly List<Genre> _genres = new List<Genre>
+        private readonly List<Genre> _genres = new List<Genre>
         {
             new Genre { Id = 1, Name = "Action" },
             new Genre { Id = 2, Name = "Adventure" },
@@ -35,7 +41,7 @@ namespace Data
             new Genre { Id = 12, Name = "Comedy" }
         };
 
-        private static readonly List<Title> _movies = new List<Title>
+        private readonly List<Title> _movies = new List<Title>
         {
             new Title { Type = _types[0], PrimaryTitle = "The Matrix", OriginalTitle = "The Matrix", IsAdult = false, StartYear = 1999, RuntimeMinutes = 136, Genres = new List<Genre> { _genres[0], _genres[3] } },
             new Title { Type = _types[0], PrimaryTitle = "The Matrix Reloaded", OriginalTitle = "The Matrix Reloaded", IsAdult = false, StartYear = 2003, RuntimeMinutes = 138, Genres = new List<Genre> { _genres[0], _genres[3] } },
@@ -58,6 +64,7 @@ namespace Data
             new Title { Type = _types[0], PrimaryTitle = "Insomnia", OriginalTitle = "Insomnia", IsAdult = false, StartYear = 2002, RuntimeMinutes = 118, Genres = new List<Genre> { _genres[2], _genres[5] } },
             new Title { Type = _types[0], PrimaryTitle = "Following", OriginalTitle = "Following", IsAdult = false, StartYear = 1998, RuntimeMinutes = 69, Genres = new List<Genre> { _genres[2], _genres[5] } }
         };
+
 
         public void AddMovie(Title movie)
         {

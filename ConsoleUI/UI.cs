@@ -1,9 +1,27 @@
-﻿namespace ConsoleUI
+﻿using Data;
+
+namespace ConsoleUI
 {
     internal class UI
     {
-        private MovieSearchMenu _movieSearchMenu = new();
-        public void printMenu()
+        private readonly IMovieRepository _movieRepository;
+        private readonly INameRepository _nameRepository;
+
+        private readonly MovieSearchMenu _movieSearchMenu;
+        private readonly PersonSearchMenu _personSearchMenu;
+        private readonly AddMovieMenu _addMovieMenu;
+
+        public UI(IMovieRepository movieRepository, INameRepository nameRepository)
+        {
+            _movieRepository = movieRepository;
+            _nameRepository = nameRepository;
+
+            _movieSearchMenu = new MovieSearchMenu(_movieRepository);
+            _personSearchMenu = new PersonSearchMenu(_nameRepository);
+            _addMovieMenu = new AddMovieMenu(_movieRepository);
+        }
+
+        public void Start()
         {
             while (true)
             {
@@ -20,7 +38,7 @@
                         break;
 
                     case "2":
-                        PersonSearchMenu.Execute();
+                        _personSearchMenu.Execute();
                         break;
 
                     case "3":
@@ -36,7 +54,7 @@
                         break;
 
                     case "5":
-                        AddMovieMenu.Execute();
+                        _addMovieMenu.Execute();
                         break;
 
                     case "6":

@@ -5,72 +5,173 @@ namespace ConsoleUI
 {
     internal class AddMovieMenu
     {
-        private static MovieRepository _repository = new();
+        private readonly IMovieRepository _repository;
 
-        public static void Execute()
+        public AddMovieMenu(IMovieRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public void Execute()
         {
             while (true)
             {
                 Console.Clear();
                 DisplayMenuHeader();
 
-                Console.Write("Title Type (e.g., movie, short, tvSeries): ");
-                string titleTypeName = Console.ReadLine() ?? "";
-                IMDBType? titleType = _repository.GetTypes().FirstOrDefault(t => t.Name.Equals(titleTypeName, StringComparison.OrdinalIgnoreCase));
+                // Title Type Selection
+                var titleType = GetTitleType();
                 if (titleType == null)
-                {
-                    Console.WriteLine("Invalid title type. Please try again.");
-                    Console.ReadKey();
                     continue;
-                }
 
-                Console.Write("Primary Title: ");
-                string primaryTitle = Console.ReadLine() ?? "";
+                // Primary Title
+                var primaryTitle = GetTitleInput("Primary Title");
+                if (primaryTitle == null)
+                    continue;
 
-                Console.Write("Original Title: ");
-                string originalTitle = Console.ReadLine() ?? "";
+                // Original Title
+                var originalTitle = GetTitleInput("Original Title");
+                if (originalTitle == null)
+                    continue;
 
-                Console.Write("Is Adult (true/false): ");
-                bool isAdult = bool.TryParse(Console.ReadLine(), out bool result) && result;
+                // Is Adult
+                bool isAdult = GetAdultInput();
 
-                Console.Write("Start Year (optional): ");
-                int? startYear = int.TryParse(Console.ReadLine(), out int sy) ? sy : null;
+                // End Year
+                int? endYear = GetOptionalYear("End Year");
 
-                Console.Write("End Year (optional): ");
-                int? endYear = int.TryParse(Console.ReadLine(), out int ey) ? ey : null;
+                // Runtime Minutes
+                int? runtimeMinutes = GetOptionalRuntime("Runtime Minutes");
 
-                Console.Write("Runtime Minutes (optional): ");
-                int? runtimeMinutes = int.TryParse(Console.ReadLine(), out int rm) ? rm : null;
+                // Genre Selection
+                var selectedGenres = SelectGenres();
+                if (selectedGenres == null)
+                    continue;
 
-                Console.Write("Genres (comma-separated): ");
-                List<Genre> genres = (Console.ReadLine() ?? "")
-                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                    .Select(g => g.Trim())
-                    .Select(g => _repository.GetGenres().FirstOrDefault(genre => genre.Name.Equals(g, StringComparison.OrdinalIgnoreCase)))
-                    .Where(g => g != null)
-                    .ToList()!;
-
+                // Confirm and Add Movie
                 Title newMovie = new Title
                 {
                     Type = titleType,
                     PrimaryTitle = primaryTitle,
                     OriginalTitle = originalTitle,
                     IsAdult = isAdult,
-                    StartYear = startYear,
                     EndYear = endYear,
                     RuntimeMinutes = runtimeMinutes,
-                    Genres = genres
+                    Genres = selectedGenres
                 };
 
-                _repository.AddMovie(newMovie);
+                Console.WriteLine("\nMovie to be added:");
+                Console.WriteLine(newMovie);
+                if (GetYesNoInput("Accept? [Y] Yes / [N] No"))
+                {
+                    _repository.AddMovie(newMovie);
+                    Console.WriteLine("\nMovie added successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("\nOperation cancelled.");
+                }
 
-                Console.WriteLine("Movie successfully added to the database.");
-                Console.WriteLine("Press any key to return to the main menu...");
-                Console.ReadKey();
+                // Add Another or Go Back
+                if (!GetYesNoInput("Add another movie? [Y] Yes / [N] No"))
+                    return;
             }
         }
 
-        private static void DisplayMenuHeader()
+        private bool GetYesNoInput(string prompt)
+        {
+            Console.WriteLine(prompt);
+            while (true)
+            {
+                var key = Console.ReadKey().Key;
+                if (key == ConsoleKey.Y)
+                    return true;
+                if (key == ConsoleKey.N)
+                    return false;
+                Console.WriteLine("\nInvalid input. Please press 'Y' or 'N'.");
+            }
+        }
+
+        private IMDBType? GetTitleType()
+        {
+            var types = _repository.GetTypes();
+            while (true)
+            {
+                Console.WriteLine("Select Title Type:");
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Console.WriteLine($"[{i + 1}] {types[i].Name}");
+                }
+                Console.Write("Your choice: ");
+                if (int.TryParse(Console.ReadLine(), out int choice) && choice >= 1 && choice <= types.Count)
+                {
+                    return types[choice - 1];
+                }
+                Console.WriteLine("Invalid choice. Please try again.");
+            }
+        }
+
+        private string? GetTitleInput(string prompt)
+        {
+            Console.Write($"{prompt}: ");
+            string input = Console.ReadLine()?.Trim() ?? "";
+            if (string.IsNullOrEmpty(input))
+            {
+                Console.WriteLine("Title cannot be empty. Press any key to retry...");
+                Console.ReadKey();
+                return null;
+            }
+            return input;
+        }
+
+        private bool GetAdultInput()
+        {
+            while (true)
+            {
+                Console.WriteLine("Is Adult (press [T] for True, [F] for False): ");
+                ConsoleKey key = Console.ReadKey().Key;
+                if (key == ConsoleKey.T) return true;
+                if (key == ConsoleKey.F) return false;
+                Console.WriteLine("\nInvalid input. Please press 'T' or 'F'.");
+            }
+        }
+
+        private int? GetOptionalYear(string prompt)
+        {
+            Console.Write($"{prompt} (optional): ");
+            if (int.TryParse(Console.ReadLine(), out int year))
+                return year;
+            return null;
+        }
+
+        private int? GetOptionalRuntime(string prompt)
+        {
+            Console.Write($"{prompt} (optional): ");
+            if (int.TryParse(Console.ReadLine(), out int runtime) && runtime > 0)
+                return runtime;
+            return null;
+        }
+
+        private List<Genre>? SelectGenres()
+        {
+            var genres = _repository.GetGenres();
+            Console.WriteLine("Select 1 to 3 Genres (comma-separated):");
+            for (int i = 0; i < genres.Count; i++)
+            {
+                Console.WriteLine($"[{i + 1}] {genres[i].Name}");
+            }
+            Console.Write("Your choices: ");
+            var genreChoices = Console.ReadLine()?.Split(",").Select(x => int.TryParse(x.Trim(), out int g) ? g : -1).Where(x => x > 0 && x <= genres.Count).Distinct().Take(3).ToList();
+            if (genreChoices.Count == 0)
+            {
+                Console.WriteLine("Invalid genre choices. Press any key to retry...");
+                Console.ReadKey();
+                return null;
+            }
+            return genreChoices.Select(gc => genres[gc - 1]).ToList();
+        }
+
+        private void DisplayMenuHeader()
         {
             Console.WriteLine();
             Console.WriteLine("=========================================================");
