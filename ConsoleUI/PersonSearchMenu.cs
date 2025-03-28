@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.Models;
 
 namespace ConsoleUI
 {
@@ -6,7 +7,7 @@ namespace ConsoleUI
     {
         private static int _pageSize = 10;
         private static int _currentPage = 0;
-        private static List<string> _persons = new List<string>();
+        private static List<Name> _names = new List<Name>();
 
         public static void Execute()
         {
@@ -22,8 +23,8 @@ namespace ConsoleUI
                     continue;
                 }
 
-                _persons = MockPersonDatabase.GetPersons(wildcard);
-                if (_persons.Count == 0)
+                _names = NameRepository.GetPersons(wildcard);
+                if (_names.Count == 0)
                 {
                     if (!HandleNoPersonsFound()) return;
                     continue;
@@ -32,7 +33,7 @@ namespace ConsoleUI
                 _currentPage = 0;
                 while (true)
                 {
-                    DisplayResultsPage(_persons, wildcard);
+                    DisplayResultsPage(_names, wildcard);
                     string? navChoice = GetNavigationInput();
 
                     bool shouldQuit = HandleNavigationChoice(navChoice);
@@ -76,7 +77,7 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private static void DisplayResultsPage(List<string> persons, string wildcard)
+        private static void DisplayResultsPage(List<Name> persons, string wildcard)
         {
             Console.Clear();
             int startIndex = _currentPage * _pageSize;
@@ -91,7 +92,7 @@ namespace ConsoleUI
 
             for (int i = startIndex; i < endIndex; i++)
             {
-                Console.WriteLine($"[{i + 1}] {persons[i]}");
+                Console.WriteLine($"[{i + 1}] {persons[i].PrimaryName}");
             }
 
             Console.WriteLine("\nPage Navigation:");
@@ -109,7 +110,7 @@ namespace ConsoleUI
         {
             if (int.TryParse(navChoice, out int selection))
             {
-                if (selection > 0 && selection <= _persons.Count)
+                if (selection > 0 && selection <= _names.Count)
                 {
                     HandlePersonSelection(selection);
                 }
@@ -124,7 +125,7 @@ namespace ConsoleUI
             switch (navChoice)
             {
                 case "n":
-                    if ((_currentPage + 1) * _pageSize < _persons.Count) _currentPage++;
+                    if ((_currentPage + 1) * _pageSize < _names.Count) _currentPage++;
                     break;
                 case "p":
                     if (_currentPage > 0) _currentPage--;
@@ -143,7 +144,7 @@ namespace ConsoleUI
 
         private static void HandlePersonSelection(int selection)
         {
-            Console.WriteLine($"\nYou selected: {_persons[selection - 1]}");
+            Console.WriteLine($"\nYou selected: {_names[selection - 1]}");
             Console.Write("\nPress any key to return to the search menu...");
             Console.ReadKey();
         }

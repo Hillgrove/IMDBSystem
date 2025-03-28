@@ -7,7 +7,7 @@ namespace ConsoleUI
     {
         private int _pageSize = 10;
         private int _currentPage = 0;
-        private List<Movie> _movies = new List<Movie>();
+        private List<Title> _movies = new List<Title>();
         private MovieRepository _repository = new MovieRepository();
 
         public void Execute()
@@ -78,7 +78,7 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private void DisplayResultsPage(List<Movie> movies, string wildcard)
+        private void DisplayResultsPage(List<Title> movies, string wildcard)
         {
             Console.Clear();
             int startIndex = _currentPage * _pageSize;
@@ -93,7 +93,7 @@ namespace ConsoleUI
 
             for (int i = startIndex; i < endIndex; i++)
             {
-                Console.WriteLine($"[{i + 1}] {movies[i]}");
+                Console.WriteLine($"[{i + 1}] {movies[i].PrimaryTitle}");
             }
 
             Console.WriteLine("\nPage Navigation:");

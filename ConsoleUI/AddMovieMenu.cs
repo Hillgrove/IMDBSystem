@@ -14,8 +14,15 @@ namespace ConsoleUI
                 Console.Clear();
                 DisplayMenuHeader();
 
-                Console.Write("Title Type: ");
-                string titleType = Console.ReadLine() ?? "";
+                Console.Write("Title Type (e.g., movie, short, tvSeries): ");
+                string titleTypeName = Console.ReadLine() ?? "";
+                IMDBType? titleType = _repository.GetTypes().FirstOrDefault(t => t.Name.Equals(titleTypeName, StringComparison.OrdinalIgnoreCase));
+                if (titleType == null)
+                {
+                    Console.WriteLine("Invalid title type. Please try again.");
+                    Console.ReadKey();
+                    continue;
+                }
 
                 Console.Write("Primary Title: ");
                 string primaryTitle = Console.ReadLine() ?? "";
@@ -36,17 +43,23 @@ namespace ConsoleUI
                 int? runtimeMinutes = int.TryParse(Console.ReadLine(), out int rm) ? rm : null;
 
                 Console.Write("Genres (comma-separated): ");
-                List<string> genres = new List<string>((Console.ReadLine() ?? "").Split(","));
+                List<Genre> genres = (Console.ReadLine() ?? "")
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(g => g.Trim())
+                    .Select(g => _repository.GetGenres().FirstOrDefault(genre => genre.Name.Equals(g, StringComparison.OrdinalIgnoreCase)))
+                    .Where(g => g != null)
+                    .ToList()!;
 
-                Movie newMovie = new Movie
+                Title newMovie = new Title
                 {
-                    TitleType = titleType,
+                    Type = titleType,
                     PrimaryTitle = primaryTitle,
                     OriginalTitle = originalTitle,
                     IsAdult = isAdult,
                     StartYear = startYear,
                     EndYear = endYear,
-                    RuntimeMinutes = runtimeMinutes
+                    RuntimeMinutes = runtimeMinutes,
+                    Genres = genres
                 };
 
                 _repository.AddMovie(newMovie);
