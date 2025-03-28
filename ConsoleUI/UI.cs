@@ -7,18 +7,18 @@ namespace ConsoleUI
         private readonly IMovieRepository _movieRepository;
         private readonly INameRepository _nameRepository;
 
-        private readonly MovieSearchMenu _movieSearchMenu;
+        private readonly TitleSearchMenu _movieSearchMenu;
         private readonly PersonSearchMenu _personSearchMenu;
-        private readonly AddMovieMenu _addMovieMenu;
+        private readonly AddTitleMenu _addMovieMenu;
 
         public UI(IMovieRepository movieRepository, INameRepository nameRepository)
         {
             _movieRepository = movieRepository;
             _nameRepository = nameRepository;
 
-            _movieSearchMenu = new MovieSearchMenu(_movieRepository);
+            _movieSearchMenu = new TitleSearchMenu(_movieRepository);
             _personSearchMenu = new PersonSearchMenu(_nameRepository);
-            _addMovieMenu = new AddMovieMenu(_movieRepository);
+            _addMovieMenu = new AddTitleMenu(_movieRepository);
         }
 
         public void Start()

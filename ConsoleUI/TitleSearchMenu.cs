@@ -3,7 +3,7 @@ using Data.Models;
 
 namespace ConsoleUI
 {
-    public class MovieSearchMenu
+    public class TitleSearchMenu
     {
         private int _pageSize = 10;
         private int _currentPage = 0;
@@ -11,7 +11,7 @@ namespace ConsoleUI
 
         private readonly IMovieRepository _repository;
 
-        public MovieSearchMenu(IMovieRepository repository)
+        public TitleSearchMenu(IMovieRepository repository)
         {
             _repository = repository;
         }
