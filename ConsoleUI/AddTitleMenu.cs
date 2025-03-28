@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.Identity.Client;
 
 namespace ConsoleUI
 {
@@ -42,7 +41,7 @@ namespace ConsoleUI
                 int startYear = GetStartYear("Start Year");
 
                 // End Year
-                int? endYear = GetOptionalEndYear("End Year");
+                int? endYear = GetOptionalEndYear("End Year", startYear);
 
                 // Runtime Minutes
                 int? runtimeMinutes = GetOptionalRuntime("Runtime Minutes");
@@ -163,7 +162,7 @@ namespace ConsoleUI
             while (true)
             {
                 Console.Write($"{prompt}: ");
-                if (int.TryParse(Console.ReadLine(), out int year))
+                if (int.TryParse(Console.ReadLine(), out int year) && year >= 1800 && year <= DateTime.Now.Year)
                 {
                     Console.Clear();
                     DisplayMenuHeader();
@@ -172,15 +171,15 @@ namespace ConsoleUI
 
                 Console.Clear();
                 DisplayMenuHeader();
-                Console.WriteLine("Invalid input. Please try again.");
+                Console.WriteLine("Invalid year. Please enter a value between 1800 and the current year.");
             }
         }
 
-        private int? GetOptionalEndYear(string prompt)
+        private int? GetOptionalEndYear(string prompt, int startYear)
         {
             while (true)
             {
-                Console.Write($"{prompt} (optional): ");
+                Console.Write($"{prompt} (optional, must be >= {startYear}): ");
                 string? input = Console.ReadLine()?.Trim();
 
                 if (string.IsNullOrEmpty(input))
@@ -190,7 +189,7 @@ namespace ConsoleUI
                     return null;
                 }
 
-                if (int.TryParse(input, out int year))
+                if (int.TryParse(input, out int year) && year >= startYear)
                 {
                     Console.Clear();
                     DisplayMenuHeader();
@@ -199,7 +198,7 @@ namespace ConsoleUI
 
                 Console.Clear();
                 DisplayMenuHeader();
-                Console.WriteLine("Invalid input. Please enter a valid year or leave empty.");
+                Console.WriteLine($"Invalid input. Please enter a valid year (>= {startYear}) or leave empty.");
             }
         }
 
@@ -251,7 +250,6 @@ namespace ConsoleUI
 
                 if (input == "c")
                 {
-                    // Allow continuing if at least one genre is selected
                     if (selectedGenres.Count > 0)
                         break;
 
