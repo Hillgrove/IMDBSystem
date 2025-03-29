@@ -4,6 +4,7 @@ namespace Data
 {
     public interface INameRepository
     {
-        List<Name> GetPersons(string name);
+        List<Name> GetNames(string name);
+        void AddName(Name name);
     }
 }

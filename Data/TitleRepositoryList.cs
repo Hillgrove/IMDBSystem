@@ -2,12 +2,12 @@
 
 namespace Data
 {
-    public class MovieRepositoryList : IMovieRepository
+    public class TitleRepositoryList : ITitleRepository
     {
         #region Singleton Pattern
-        private static readonly MovieRepositoryList _instance = new();
-        public static MovieRepositoryList Instance { get => _instance; }
-        private MovieRepositoryList() { }
+        private static readonly TitleRepositoryList _instance = new();
+        public static TitleRepositoryList Instance { get => _instance; }
+        private TitleRepositoryList() { }
         #endregion
 
         private static readonly List<IMDBType> _types = new List<IMDBType>
@@ -41,7 +41,7 @@ namespace Data
             new Genre { Id = 12, Name = "Comedy" }
         };
 
-        private static readonly List<Title> _movies = new List<Title>
+        private static readonly List<Title> _titles = new List<Title>
         {
             new Title { Type = _types[0], PrimaryTitle = "The Matrix", OriginalTitle = "The Matrix", IsAdult = false, StartYear = 1999, RuntimeMinutes = 136, Genres = new List<Genre> { _genres[0], _genres[3] } },
             new Title { Type = _types[0], PrimaryTitle = "The Matrix Reloaded", OriginalTitle = "The Matrix Reloaded", IsAdult = false, StartYear = 2003, RuntimeMinutes = 138, Genres = new List<Genre> { _genres[0], _genres[3] } },
@@ -62,19 +62,21 @@ namespace Data
             new Title { Type = _types[0], PrimaryTitle = "Memento", OriginalTitle = "Memento", IsAdult = false, StartYear = 2000, RuntimeMinutes = 113, Genres = new List<Genre> { _genres[4], _genres[5] } },
             new Title { Type = _types[0], PrimaryTitle = "Tenet", OriginalTitle = "Tenet", IsAdult = false, StartYear = 2020, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[5] } },
             new Title { Type = _types[0], PrimaryTitle = "Insomnia", OriginalTitle = "Insomnia", IsAdult = false, StartYear = 2002, RuntimeMinutes = 118, Genres = new List<Genre> { _genres[2], _genres[5] } },
-            new Title { Type = _types[0], PrimaryTitle = "Following", OriginalTitle = "Following", IsAdult = false, StartYear = 1998, RuntimeMinutes = 69, Genres = new List<Genre> { _genres[2], _genres[5] } }
+            new Title { Type = _types[0], PrimaryTitle = "Following", OriginalTitle = "Following", IsAdult = false, StartYear = 1998, RuntimeMinutes = 69, Genres = new List<Genre> { _genres[2], _genres[5] } },
+            new Title { Type = _types[0], PrimaryTitle = "The Incredibly Long and Unnecessarily Overcomplicated Title That Somehow Got Approved by the Studio and Somehow Managed to Fit on the Movie Poster Without Causing an Absolute Design Disaster", OriginalTitle = "The Longest Movie Title Ever", IsAdult = false, StartYear = 2025, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[3], _genres[9] } },
+
         };
 
 
-        public void AddMovie(Title movie)
+        public void AddTitle(Title title)
         {
-            _movies.Add(movie);
-            Console.WriteLine("Movie added successfully");
+            _titles.Add(title);
+            Console.WriteLine("Title added successfully");
         }
 
-        public List<Title> GetMovies(string title)
+        public List<Title> GetTitles(string title)
         {
-            return _movies
+            return _titles
                 .Where(m => m.PrimaryTitle.Contains(title, StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }

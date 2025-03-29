@@ -5,9 +5,9 @@ namespace ConsoleUI
 {
     internal class AddTitleMenu
     {
-        private readonly IMovieRepository _repository;
+        private readonly ITitleRepository _repository;
 
-        public AddTitleMenu(IMovieRepository repository)
+        public AddTitleMenu(ITitleRepository repository)
         {
             _repository = repository;
         }
@@ -51,8 +51,8 @@ namespace ConsoleUI
                 if (selectedGenres == null)
                     continue;
 
-                // Confirm and Add Movie
-                Title newMovie = new Title
+                // Confirm and Add Title
+                Title newTitle = new Title
                 {
                     Type = titleType,
                     PrimaryTitle = primaryTitle,
@@ -63,14 +63,14 @@ namespace ConsoleUI
                     Genres = selectedGenres
                 };
 
-                Console.WriteLine("Movie to be added:");
-                Console.WriteLine(newMovie);
+                Console.WriteLine("Title to be added:");
+                Console.WriteLine(newTitle);
                 if (GetYesNoInput("Accept? [Y] Yes / [N] No"))
                 {
-                    _repository.AddMovie(newMovie);
+                    _repository.AddTitle(newTitle);
                     Console.Clear();
                     DisplayMenuHeader();
-                    Console.WriteLine("Movie added successfully!");
+                    Console.WriteLine("Title added successfully!");
                 }
                 else
                 {
@@ -80,7 +80,7 @@ namespace ConsoleUI
                 }
 
                 // Add Another or Go Back
-                if (!GetYesNoInput("Add another movie? [Y] Yes / [N] No"))
+                if (!GetYesNoInput("Add another title? [Y] Yes / [N] No"))
                     return;
             }
         }
@@ -298,7 +298,7 @@ namespace ConsoleUI
         {
             Console.WriteLine();
             Console.WriteLine("=========================================================");
-            Console.WriteLine("                 Add Movie to Database                   ");
+            Console.WriteLine("                 Add Title to Database                   ");
             Console.WriteLine("=========================================================");
             Console.WriteLine();
         }

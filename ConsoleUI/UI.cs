@@ -4,21 +4,23 @@ namespace ConsoleUI
 {
     internal class UI
     {
-        private readonly IMovieRepository _movieRepository;
+        private readonly ITitleRepository _titleRepository;
         private readonly INameRepository _nameRepository;
 
-        private readonly TitleSearchMenu _movieSearchMenu;
+        private readonly TitleSearchMenu _titleSearchMenu;
         private readonly PersonSearchMenu _personSearchMenu;
-        private readonly AddTitleMenu _addMovieMenu;
+        private readonly AddTitleMenu _addTitleMenu;
+        private readonly AddNameMenu _addNameMenu;
 
-        public UI(IMovieRepository movieRepository, INameRepository nameRepository)
+        public UI(ITitleRepository titleRepository, INameRepository nameRepository)
         {
-            _movieRepository = movieRepository;
+            _titleRepository = titleRepository;
             _nameRepository = nameRepository;
 
-            _movieSearchMenu = new TitleSearchMenu(_movieRepository);
+            _titleSearchMenu = new TitleSearchMenu(_titleRepository);
             _personSearchMenu = new PersonSearchMenu(_nameRepository);
-            _addMovieMenu = new AddTitleMenu(_movieRepository);
+            _addTitleMenu = new AddTitleMenu(_titleRepository);
+            _addNameMenu = new AddNameMenu(_nameRepository);
         }
 
         public void Start()
@@ -34,7 +36,7 @@ namespace ConsoleUI
                 switch (choice)
                 {
                     case "1":
-                        _movieSearchMenu.Execute();
+                        _titleSearchMenu.Execute();
                         break;
 
                     case "2":
@@ -54,15 +56,15 @@ namespace ConsoleUI
                         break;
 
                     case "5":
-                        _addMovieMenu.Execute();
+                        _addTitleMenu.Execute();
                         break;
 
                     case "6":
-                        //AddPersonToDB();
+                        _addNameMenu.Execute();
                         break;
 
                     case "7":
-                        //UpdateOrDeleteMovieInformation();
+                        //UpdateOrDeleteTitleInformation();
                         break;
 
 
@@ -82,13 +84,13 @@ namespace ConsoleUI
             Console.WriteLine("=========================================================");
             Console.WriteLine();
 
-            Console.WriteLine($"  [1] Search movie title by wildcard");
+            Console.WriteLine($"  [1] Search title by wildcard");
             Console.WriteLine($"  [2] Search person by wildcard");
-            Console.WriteLine($"  [3] (Ekstra) See all information about specific movie");
+            Console.WriteLine($"  [3] (Ekstra) See all information about specific title");
             Console.WriteLine($"  [4] (Ekstra) See all information about a specific person");
-            Console.WriteLine($"  [5] Add movie to database");
+            Console.WriteLine($"  [5] Add title to database");
             Console.WriteLine($"  [6] Add person to database");
-            Console.WriteLine($"  [7] Update and/or delete movie information");
+            Console.WriteLine($"  [7] Update and/or delete title information");
 
             Console.WriteLine($"  [Q] Quit");
 

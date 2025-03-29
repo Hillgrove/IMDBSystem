@@ -2,11 +2,11 @@
 
 namespace Data
 {
-    public interface IMovieRepository
+    public interface ITitleRepository
     {
-        void AddMovie(Title movie);
+        void AddTitle(Title title);
         List<Genre> GetGenres();
-        List<Title> GetMovies(string title);
+        List<Title> GetTitles(string title);
         List<IMDBType> GetTypes();
     }
 }

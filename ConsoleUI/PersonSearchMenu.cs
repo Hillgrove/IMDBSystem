@@ -30,7 +30,7 @@ namespace ConsoleUI
                     continue;
                 }
 
-                _names = _repository.GetPersons(wildcard);
+                _names = _repository.GetNames(wildcard);
                 if (_names.Count == 0)
                 {
                     if (!HandleNoPersonsFound()) return;
@@ -103,7 +103,7 @@ namespace ConsoleUI
             }
 
             Console.WriteLine("\nPage Navigation:");
-            Console.WriteLine("Enter the number to select a movie.");
+            Console.WriteLine("Enter the number to select a title.");
             Console.WriteLine("[N] Next Page  [P] Previous Page  [B] Back to Search  [Q] Quit to Main Menu");
         }
 

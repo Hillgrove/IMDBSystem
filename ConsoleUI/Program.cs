@@ -1,12 +1,12 @@
 ﻿using ConsoleUI;
 using Data;
 
-IMovieRepository movieRepository = MovieRepositoryList.Instance;
-// IMovieRepository repository = new MovieRepositorySql("YourConnectionString");
+ITitleRepository titleRepository = TitleRepositoryList.Instance;
+// ITitleRepository repository = new TitleRepositorySql("YourConnectionString");
 
 INameRepository nameRepository = NameRepositoryList.Instance;
 // INameRepository nameRepository = new NameRepositoryListSql("YourConnectionString");
 
 
-UI SupercalifragilisticexpialidociousUserInterfaceDeluxe = new UI(movieRepository, nameRepository);
+UI SupercalifragilisticexpialidociousUserInterfaceDeluxe = new UI(titleRepository, nameRepository);
 SupercalifragilisticexpialidociousUserInterfaceDeluxe.Start();
