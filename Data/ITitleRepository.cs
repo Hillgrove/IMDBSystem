@@ -8,5 +8,7 @@ namespace Data
         List<Genre> GetGenres();
         List<Title> GetTitles(string title);
         List<IMDBType> GetTypes();
+        void UpdateTitle(Title original, Title updated);
+        void DeleteTitle(Title title);
     }
 }

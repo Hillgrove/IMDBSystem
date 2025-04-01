@@ -44,13 +44,13 @@ namespace ConsoleUI
                         break;
 
                     case "3":
-                        Console.WriteLine("Not Implemented yet");
+                        Console.WriteLine("Not Implemented");
                         Console.Write("Press any key to continue...");
                         Console.ReadKey();
                         break;
 
                     case "4":
-                        Console.WriteLine("Not Implemented yet");
+                        Console.WriteLine("Not Implemented");
                         Console.Write("Press any key to continue...");
                         Console.ReadKey();
                         break;
@@ -62,11 +62,6 @@ namespace ConsoleUI
                     case "6":
                         _addNameMenu.Execute();
                         break;
-
-                    case "7":
-                        //UpdateOrDeleteTitleInformation();
-                        break;
-
 
                     case "q":
                         Console.WriteLine("\nThanks for using the Magical IMDB System... Stay safe");
@@ -84,13 +79,12 @@ namespace ConsoleUI
             Console.WriteLine("=========================================================");
             Console.WriteLine();
 
-            Console.WriteLine($"  [1] Search title by wildcard");
+            Console.WriteLine($"  [1] Search title by wildcard and update/delete found title");
             Console.WriteLine($"  [2] Search person by wildcard");
             Console.WriteLine($"  [3] (Ekstra) See all information about specific title");
             Console.WriteLine($"  [4] (Ekstra) See all information about a specific person");
             Console.WriteLine($"  [5] Add title to database");
             Console.WriteLine($"  [6] Add person to database");
-            Console.WriteLine($"  [7] Update and/or delete title information");
 
             Console.WriteLine($"  [Q] Quit");
 

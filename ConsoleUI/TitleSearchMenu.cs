@@ -70,7 +70,7 @@ namespace ConsoleUI
 
         private void DisplayInvalidInputMessage()
         {
-            Console.WriteLine("\nInvalid input. Returning to menu...");
+            Console.WriteLine("\nInvalid input. Try again...");
             Console.ReadKey();
         }
 
@@ -160,25 +160,64 @@ namespace ConsoleUI
         private void HandleTitleSelection(int selection)
         {
             Title selectedTitle = _titles[selection - 1];
-            Console.Clear();
+            
+            while (true)
+            {
+                Console.Clear();
 
-            PrintCenteredHeader(selectedTitle.PrimaryTitle);
+                PrintCenteredHeader(selectedTitle.PrimaryTitle);
 
-            PrintWrappedLine("Title Type      : " + selectedTitle.Type.Name);
-            PrintWrappedLine("Primary Title   : " + selectedTitle.PrimaryTitle);
-            PrintWrappedLine("Original Title  : " + selectedTitle.OriginalTitle);
-            PrintWrappedLine("Adult Content   : " + (selectedTitle.IsAdult ? "Yes" : "No"));
-            PrintWrappedLine("Release Year    : " + (selectedTitle.StartYear.HasValue ? selectedTitle.StartYear.ToString() : "Unknown"));
-            PrintWrappedLine("End Year        : " + (selectedTitle.EndYear.HasValue ? selectedTitle.EndYear.ToString() : "N/A"));
-            PrintWrappedLine("Runtime         : " + (selectedTitle.RuntimeMinutes.HasValue ? $"{selectedTitle.RuntimeMinutes} minutes" : "N/A"));
-            PrintWrappedLine("Genres          : " + (selectedTitle.Genres.Count > 0 ? string.Join(", ", selectedTitle.Genres.Select(g => g.Name)) : "None"));
+                PrintWrappedLine("Title Type      : " + selectedTitle.Type.Name);
+                PrintWrappedLine("Primary Title   : " + selectedTitle.PrimaryTitle);
+                PrintWrappedLine("Original Title  : " + selectedTitle.OriginalTitle);
+                PrintWrappedLine("Adult Content   : " + (selectedTitle.IsAdult ? "Yes" : "No"));
+                PrintWrappedLine("Release Year    : " + (selectedTitle.StartYear.HasValue ? selectedTitle.StartYear.ToString() : "Unknown"));
+                PrintWrappedLine("End Year        : " + (selectedTitle.EndYear.HasValue ? selectedTitle.EndYear.ToString() : "N/A"));
+                PrintWrappedLine("Runtime         : " + (selectedTitle.RuntimeMinutes.HasValue ? $"{selectedTitle.RuntimeMinutes} minutes" : "N/A"));
+                PrintWrappedLine("Genres          : " + (selectedTitle.Genres.Count > 0 ? string.Join(", ", selectedTitle.Genres.Select(g => g.Name)) : "None"));
 
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.Write("\nPress any key to return to the search menu...");
-            Console.ReadKey();
+                Console.WriteLine();
+                Console.WriteLine("[U] Update title   [D] Delete title   [B] Back");
+                Console.Write("\nYour choice: ");
+                string? choice = Console.ReadLine()?.Trim().ToLower();
+
+                switch (choice)
+                {
+                    case "u":
+                        var updated = PromptForTitleUpdate(selectedTitle);
+                        _repository.UpdateTitle(selectedTitle, updated);
+
+                        int index = _titles.IndexOf(selectedTitle);
+                        if (index >= 0)
+                            _titles[index] = updated;
+
+                        selectedTitle = updated;
+                        break;
+
+                    case "d":
+                        Console.Write("Are you sure you want to delete this title? [Y/N]: ");
+                        var confirm = Console.ReadLine()?.Trim().ToLower();
+                        if (confirm == "y")
+                        {
+                            _repository.DeleteTitle(selectedTitle);
+                            _titles.Remove(selectedTitle);
+                            Console.Write("Title deleted. Press any key to continue...");
+                            Console.ReadKey();
+                            return;
+                        }
+                        break;
+
+                    case "b":
+                        return;
+
+                    default:
+                        Console.Write("Invalid choice. Press any key to try again...");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+            
         }
-
 
         private void PrintCenteredHeader(string title)
         {
@@ -234,6 +273,155 @@ namespace ConsoleUI
                 Console.WriteLine(new string(' ', labelWidth) + text.Substring(0, breakIndex).Trim());
                 text = text.Substring(breakIndex).TrimStart();
             }
+        }
+
+        private Title PromptForTitleUpdate(Title old)
+        {
+            var types = _repository.GetTypes();
+            var genres = _repository.GetGenres();
+
+            // Kopiér eksisterende værdier
+            var updated = new Title
+            {
+                Type = old.Type,
+                PrimaryTitle = old.PrimaryTitle,
+                OriginalTitle = old.OriginalTitle,
+                IsAdult = old.IsAdult,
+                StartYear = old.StartYear,
+                EndYear = old.EndYear,
+                RuntimeMinutes = old.RuntimeMinutes,
+                Genres = old.Genres.ToList()
+            };
+
+            updated.Type = PromptSelect("Select new type", types, updated.Type, old.PrimaryTitle);
+            updated.PrimaryTitle = PromptString("Primary Title", updated.PrimaryTitle, old.PrimaryTitle);
+            updated.OriginalTitle = PromptString("Original Title", updated.OriginalTitle, old.PrimaryTitle);
+            updated.IsAdult = PromptBool("Is Adult", updated.IsAdult, old.PrimaryTitle);
+            updated.StartYear = PromptInt("Start Year", updated.StartYear, old.PrimaryTitle);
+            updated.EndYear = PromptInt("End Year", updated.EndYear, old.PrimaryTitle);
+            updated.RuntimeMinutes = PromptInt("Runtime (minutes)", updated.RuntimeMinutes, old.PrimaryTitle);
+            updated.Genres = PromptMultiSelect("Select genres (max 3)", genres, updated.Genres, 3, old.PrimaryTitle);
+
+            return updated;
+        }
+
+
+        private T PromptSelect<T>(string label, List<T> options, T current, string titleName) where T : class
+        {
+            while (true)
+            {
+                Console.Clear();
+                DisplayMenuHeader();
+                Console.WriteLine($"Updating: {titleName}");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter without input to keep current value.");
+                Console.WriteLine();
+                Console.WriteLine($"{label} (current: {current})");
+
+                for (int i = 0; i < options.Count; i++)
+                    Console.WriteLine($"[{i + 1}] {options[i]}");
+
+                Console.WriteLine();
+                Console.Write("Choice: ");
+                string? input = Console.ReadLine()?.Trim();
+
+                if (string.IsNullOrEmpty(input))
+                    return current;
+
+                if (int.TryParse(input, out int index) && index >= 1 && index <= options.Count)
+                    return options[index - 1];
+
+                Console.WriteLine("Invalid input. Press any key to try again...");
+                Console.ReadKey();
+            }
+        }
+
+
+        private string PromptString(string label, string current, string titleName)
+        {
+            Console.Clear();
+            DisplayMenuHeader();
+            Console.WriteLine($"Updating: {titleName}");
+            Console.WriteLine();
+            Console.WriteLine("Press Enter without input to keep current value.");
+            Console.WriteLine();
+            Console.Write($"{label} (current: \"{current}\"): ");
+            string? input = Console.ReadLine()?.Trim();
+            return string.IsNullOrEmpty(input) ? current : input;
+        }
+
+
+
+        private bool PromptBool(string label, bool current, string titleName)
+        {
+            while (true)
+            {
+                Console.Clear();
+                DisplayMenuHeader();
+                Console.WriteLine($"Updating: {titleName}");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter without input to keep current value.");
+                Console.WriteLine();
+                Console.Write($"{label} (current: {(current ? "Y" : "N")}) [Y/N]: ");
+
+                string? input = Console.ReadLine()?.Trim().ToLower();
+
+                if (string.IsNullOrEmpty(input))
+                    return current;
+
+                if (input == "y") return true;
+                if (input == "n") return false;
+            }
+        }
+
+
+        private int? PromptInt(string label, int? current, string titleName)
+        {
+            Console.Clear();
+            DisplayMenuHeader();
+            Console.WriteLine($"Updating: {titleName}");
+            Console.WriteLine();
+            Console.WriteLine("Press Enter without input to keep current value.");
+            Console.WriteLine();
+            Console.WriteLine($"Updating: {(current.HasValue ? current.ToString() : "N/A")}");
+            Console.WriteLine();
+            Console.Write($"{label} (current: {(current.HasValue ? current.ToString() : "N/A")}): ");
+            string? input = Console.ReadLine()?.Trim();
+            if (string.IsNullOrEmpty(input)) return current;
+            if (int.TryParse(input, out int result)) return result;
+
+            Console.WriteLine("Invalid input. Press any key to keep current.");
+            Console.ReadKey();
+            return current;
+        }
+
+
+        private List<Genre> PromptMultiSelect(string label, List<Genre> allGenres, List<Genre> current, int max, string titleName)
+        {
+            var selected = new List<Genre>();
+            while (selected.Count < max)
+            {
+                Console.Clear();
+                DisplayMenuHeader();
+                Console.WriteLine($"{label} (current: {string.Join(", ", current.Select(g => g.Name))})");
+                Console.WriteLine();
+
+                for (int i = 0; i < allGenres.Count; i++)
+                    Console.WriteLine($"[{i + 1}] {allGenres[i].Name}");
+
+                Console.Write($"Select genre {selected.Count + 1} (or Enter to finish): ");
+                string? input = Console.ReadLine()?.Trim();
+                if (string.IsNullOrEmpty(input)) break;
+
+                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= allGenres.Count)
+                {
+                    Genre g = allGenres[choice - 1];
+                    if (!selected.Contains(g))
+                        selected.Add(g);
+                }
+            }
+
+            return selected.Count > 0 ? selected : current;
         }
     }
 }

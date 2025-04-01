@@ -90,6 +90,18 @@ namespace Data
         {
             return _genres;
         }
+
+        public void UpdateTitle(Title original, Title updated)
+        {
+            int index = _titles.IndexOf(original);
+            if (index >= 0)
+                _titles[index] = updated;
+        }
+
+        public void DeleteTitle(Title title)
+        {
+            _titles.Remove(title);
+        }
     }
 }
 

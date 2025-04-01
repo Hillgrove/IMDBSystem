@@ -26,13 +26,9 @@ namespace ConsoleUI
 
                 // Primary Title
                 var primaryTitle = GetTitleInput("Primary Title");
-                if (primaryTitle == null)
-                    continue;
 
                 // Original Title
                 var originalTitle = GetTitleInput("Original Title");
-                if (originalTitle == null)
-                    continue;
 
                 // Is Adult
                 bool isAdult = GetAdultInput();
@@ -64,7 +60,17 @@ namespace ConsoleUI
                 };
 
                 Console.WriteLine("Title to be added:");
-                Console.WriteLine(newTitle);
+                Console.WriteLine();
+                PrintWrappedLine("Title Type      : " + newTitle.Type.Name);
+                PrintWrappedLine("Primary Title   : " + newTitle.PrimaryTitle);
+                PrintWrappedLine("Original Title  : " + newTitle.OriginalTitle);
+                PrintWrappedLine("Adult Content   : " + (newTitle.IsAdult ? "Yes" : "No"));
+                PrintWrappedLine("Release Year    : " + (newTitle.StartYear.HasValue ? newTitle.StartYear.ToString() : "Unknown"));
+                PrintWrappedLine("End Year        : " + (newTitle.EndYear.HasValue ? newTitle.EndYear.ToString() : "N/A"));
+                PrintWrappedLine("Runtime         : " + (newTitle.RuntimeMinutes.HasValue ? $"{newTitle.RuntimeMinutes} minutes" : "N/A"));
+                PrintWrappedLine("Genres          : " + (newTitle.Genres.Count > 0 ? string.Join(", ", newTitle.Genres.Select(g => g.Name)) : "None"));
+
+                Console.WriteLine();
                 if (GetYesNoInput("Accept? [Y] Yes / [N] No"))
                 {
                     _repository.AddTitle(newTitle);
@@ -87,14 +93,14 @@ namespace ConsoleUI
 
         private bool GetYesNoInput(string prompt)
         {
-            Console.Write(prompt);
+            Console.Write($"{prompt}: ");
             while (true)
             {
-                var key = Console.ReadKey().Key;
-                if (key == ConsoleKey.Y)
-                    return true;
-                if (key == ConsoleKey.N)
-                    return false;
+                string input = Console.ReadLine()?.Trim() ?? "";
+                
+                if (input == "y" || input == "n")
+                    return input == "y";
+
                 Console.WriteLine("\nInvalid input. Please press 'Y' or 'N'.");
             }
         }
@@ -123,32 +129,39 @@ namespace ConsoleUI
             }
         }
 
-        private string? GetTitleInput(string prompt)
+        private string GetTitleInput(string prompt)
         {
-            Console.Write($"{prompt}: ");
-            string input = Console.ReadLine()?.Trim() ?? "";
-            if (string.IsNullOrEmpty(input))
+            while (true)
             {
+                Console.Write($"{prompt}: ");
+                string input = Console.ReadLine()?.Trim() ?? "";
+                if (!string.IsNullOrEmpty(input))
+                {
+                    Console.Clear();
+                    DisplayMenuHeader();
+                    return input;
+                }
+
                 Console.WriteLine("Title cannot be empty. Press any key to retry...");
                 Console.ReadKey();
-                return null;
+
+                Console.Clear();
+                DisplayMenuHeader();
             }
-            Console.Clear();
-            DisplayMenuHeader();
-            return input;
         }
 
         private bool GetAdultInput()
         {
             while (true)
             {
-                Console.Write("Is Adult (press [T] for True, [F] for False): ");
-                ConsoleKey key = Console.ReadKey().Key;
-                if (key == ConsoleKey.T || key == ConsoleKey.F)
+                Console.Write("Is it an adult title? [T] True / [F] False: ");
+                string? input = Console.ReadLine()?.Trim().ToLower();
+
+                if (input == "t" || input == "f")
                 {
                     Console.Clear();
                     DisplayMenuHeader();
-                    return key == ConsoleKey.T;
+                    return input == "t";
                 }
 
                 Console.Clear();
@@ -293,7 +306,6 @@ namespace ConsoleUI
             return selectedGenres;
         }
 
-
         private void DisplayMenuHeader()
         {
             Console.WriteLine();
@@ -302,5 +314,31 @@ namespace ConsoleUI
             Console.WriteLine("=========================================================");
             Console.WriteLine();
         }
+
+        private void PrintWrappedLine(string text, int maxWidth = 55)
+        {
+            int labelWidth = text.IndexOf(':') + 2;
+            int availableWidth = maxWidth - labelWidth;
+
+            if (text.Length <= maxWidth)
+            {
+                Console.WriteLine(text);
+                return;
+            }
+
+            int breakIndex = text.LastIndexOf(' ', maxWidth);
+            if (breakIndex == -1) breakIndex = maxWidth;
+            Console.WriteLine(text.Substring(0, breakIndex));
+            text = text.Substring(breakIndex).TrimStart();
+
+            while (text.Length > 0)
+            {
+                breakIndex = text.Length > availableWidth ? text.LastIndexOf(' ', availableWidth) : text.Length;
+                if (breakIndex == -1) breakIndex = availableWidth;
+                Console.WriteLine(new string(' ', labelWidth) + text.Substring(0, breakIndex).Trim());
+                text = text.Substring(breakIndex).TrimStart();
+            }
+        }
+
     }
 }
