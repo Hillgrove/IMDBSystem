@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using System.Diagnostics;
 
 namespace ConsoleUI
 {
@@ -30,7 +31,12 @@ namespace ConsoleUI
                     continue;
                 }
 
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 _names = _repository.GetNames(wildcard);
+                stopwatch.Stop();
+                Console.WriteLine($"\nQuery executed in: {stopwatch.ElapsedMilliseconds} ms");
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
                 if (_names.Count == 0)
                 {
                     if (!HandleNoPersonsFound()) return;
