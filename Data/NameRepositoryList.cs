@@ -2,7 +2,8 @@
 
 namespace Data
 {
-    public class NameRepositoryList : INameRepository
+    //public class NameRepositoryList : INameRepository
+    public class NameRepositoryList
     {
         #region Singleton Pattern
         private static readonly NameRepositoryList _instance = new();
@@ -34,13 +35,16 @@ namespace Data
             new Name { PrimaryName = "Casey Affleck", BirthYear = 1975 }
         };
 
-        public List<Name> GetNames(string name)
+        public List<Name> GetNames(string name, int offset, int pageSize)
         {
             return _names
                 .Where(n => n.PrimaryName.Contains(name, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(n => n.PrimaryName)
+                .Skip(offset)
+                .Take(pageSize)
                 .ToList();
         }
+
 
         public void AddName(Name name)
         {

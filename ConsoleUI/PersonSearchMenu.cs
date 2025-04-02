@@ -6,7 +6,7 @@ namespace ConsoleUI
 {
     internal class PersonSearchMenu
     {
-        private int _pageSize = 10;
+        private const int _pageSize = 10;
         private int _currentPage = 0;
         private List<Name> _names = new List<Name>();
 
@@ -31,25 +31,44 @@ namespace ConsoleUI
                     continue;
                 }
 
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                _names = _repository.GetNames(wildcard);
-                stopwatch.Stop();
-                Console.WriteLine($"\nQuery executed in: {stopwatch.ElapsedMilliseconds} ms");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
-                if (_names.Count == 0)
-                {
-                    if (!HandleNoPersonsFound()) return;
-                    continue;
-                }
-
                 _currentPage = 0;
+
                 while (true)
                 {
-                    DisplayResultsPage(_names, wildcard);
-                    string? navChoice = GetNavigationInput();
+                    int offset = _currentPage * _pageSize;
 
+                    Stopwatch stopwatch = Stopwatch.StartNew();
+
+                    RunWithSpinner(() =>
+                    {
+                        _names = _repository.GetNames(wildcard, _currentPage * _pageSize, _pageSize);
+                    });
+
+                    stopwatch.Stop();
+
+                    long elapsedMs = stopwatch.ElapsedMilliseconds;
+
+                    if (_names.Count == 0)
+                    {
+                        if (_currentPage == 0)
+                        {
+                            if (!HandleNoPersonsFound()) return;
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nNo more results.");
+                            Console.ReadKey();
+                            _currentPage--;
+                            continue;
+                        }
+                    }
+
+                    DisplayResultsPage(_names, wildcard, elapsedMs);
+
+                    string? navChoice = GetNavigationInput();
                     bool shouldQuit = HandleNavigationChoice(navChoice);
+
                     if (shouldQuit)
                         return;
 
@@ -58,6 +77,8 @@ namespace ConsoleUI
                 }
             }
         }
+
+
 
         private void DisplayMenuHeader()
         {
@@ -90,20 +111,19 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private void DisplayResultsPage(List<Name> persons, string wildcard)
+        private void DisplayResultsPage(List<Name> persons, string wildcard, long elapsedMs)
         {
             Console.Clear();
-            int startIndex = _currentPage * _pageSize;
-            int endIndex = Math.Min(startIndex + _pageSize, persons.Count);
 
             Console.WriteLine();
             Console.WriteLine("=========================================================");
             Console.WriteLine($"                   Results for: \"{wildcard}\"                   ");
-            Console.WriteLine($"                       Page {_currentPage + 1} of {Math.Ceiling((double)persons.Count / _pageSize)}");
+            Console.WriteLine($"                   Page {_currentPage + 1}   ({elapsedMs} ms)");
             Console.WriteLine("=========================================================");
+
             Console.WriteLine();
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = 0; i < persons.Count; i++)
             {
                 Console.WriteLine($"[{i + 1}] {persons[i].PrimaryName}");
             }
@@ -138,7 +158,7 @@ namespace ConsoleUI
             switch (navChoice)
             {
                 case "n":
-                    if ((_currentPage + 1) * _pageSize < _names.Count) _currentPage++;
+                    _currentPage++;
                     break;
                 case "p":
                     if (_currentPage > 0) _currentPage--;
@@ -160,6 +180,28 @@ namespace ConsoleUI
             Console.WriteLine($"\nYou selected: {_names[selection - 1]}");
             Console.Write("\nPress any key to return to the search menu...");
             Console.ReadKey();
+        }
+
+        private void RunWithSpinner(Action action)
+        {
+            using var spinnerCts = new CancellationTokenSource();
+
+            var spinnerThread = new Thread(() =>
+            {
+                string[] sequence = { "|", "/", "-", "\\" };
+                int i = 0;
+                while (!spinnerCts.Token.IsCancellationRequested)
+                {
+                    Console.Write($"\rSearching... {sequence[i++ % sequence.Length]}");
+                    Thread.Sleep(100);
+                }
+                Console.Write("\rSearching... done.       \n");
+            });
+
+            spinnerThread.Start();
+            action();
+            spinnerCts.Cancel();
+            spinnerThread.Join();
         }
     }
 }

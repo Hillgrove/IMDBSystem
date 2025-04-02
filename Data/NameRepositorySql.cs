@@ -29,14 +29,17 @@ namespace Data
         }
 
 
-        public List<Name> GetNames(string name)
+        public List<Name> GetNames(string name, int offset, int pageSize)
         {
             var result = new List<Name>();
 
             using var conn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("dbo.SearchPersonsSorted", conn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("@searchTerm", SqlDbType.NVarChar, 100).Value = name;
+
+            cmd.Parameters.AddWithValue("@searchTerm", name);
+            cmd.Parameters.AddWithValue("@offset", offset);
+            cmd.Parameters.AddWithValue("@pageSize", pageSize);
 
             conn.Open();
             using var reader = cmd.ExecuteReader();
