@@ -1,17 +1,15 @@
 ﻿using ConsoleUI;
 using Data;
-using Microsoft.Extensions.Configuration;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 
-var config = new ConfigurationBuilder()
-    .AddUserSecrets(System.Reflection.Assembly.GetExecutingAssembly())
-    .Build();
+var vaultUri = new Uri("https://hillvault.vault.azure.net/");
+var client = new SecretClient(vaultUri, new DefaultAzureCredential());
+KeyVaultSecret secret = client.GetSecret("Obl-SQL-ConnectionString");
+string connectionString = secret.Value;
 
-string connectionString = config.GetConnectionString("Default")
-    ?? throw new InvalidOperationException("Connection string 'Default' not found in user secrets.");
-
-
-ITitleRepository titleRepository = TitleRepositoryList.Instance;
-//ITitleRepository repository = new TitleRepositorySql("YourConnectionString");
+//ITitleRepository titleRepository = TitleRepositoryList.Instance;
+ITitleRepository titleRepository = new TitleRepositorySql(connectionString);
 
 //INameRepository nameRepository = NameRepositoryList.Instance;
 INameRepository nameRepository = new NameRepositorySql(connectionString);
