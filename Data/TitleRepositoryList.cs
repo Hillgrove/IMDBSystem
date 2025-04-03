@@ -43,30 +43,28 @@ namespace Data
 
         private static readonly List<Title> _titles = new List<Title>
         {
-            new Title { Type = _types[0], PrimaryTitle = "The Matrix", OriginalTitle = "The Matrix", IsAdult = false, StartYear = 1999, RuntimeMinutes = 136, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Matrix Reloaded", OriginalTitle = "The Matrix Reloaded", IsAdult = false, StartYear = 2003, RuntimeMinutes = 138, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Matrix Revolutions", OriginalTitle = "The Matrix Revolutions", IsAdult = false, StartYear = 2003, RuntimeMinutes = 129, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Matrix Resurrections", OriginalTitle = "The Matrix Resurrections", IsAdult = false, StartYear = 2021, RuntimeMinutes = 148, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Terminator", OriginalTitle = "The Terminator", IsAdult = false, StartYear = 1984, RuntimeMinutes = 107, Genres = new List<Genre> { _genres[0], _genres[4] } },
-            new Title { Type = _types[0], PrimaryTitle = "Terminator 2: Judgment Day", OriginalTitle = "Terminator 2: Judgment Day", IsAdult = false, StartYear = 1991, RuntimeMinutes = 137, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "Terminator 3: Rise of the Machines", OriginalTitle = "Terminator 3: Rise of the Machines", IsAdult = false, StartYear = 2003, RuntimeMinutes = 109, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "Terminator Salvation", OriginalTitle = "Terminator Salvation", IsAdult = false, StartYear = 2009, RuntimeMinutes = 115, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "Terminator Genisys", OriginalTitle = "Terminator Genisys", IsAdult = false, StartYear = 2015, RuntimeMinutes = 126, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "Terminator: Dark Fate", OriginalTitle = "Terminator: Dark Fate", IsAdult = false, StartYear = 2019, RuntimeMinutes = 128, Genres = new List<Genre> { _genres[0], _genres[3] } },
-            new Title { Type = _types[0], PrimaryTitle = "Inception", OriginalTitle = "Inception", IsAdult = false, StartYear = 2010, RuntimeMinutes = 148, Genres = new List<Genre> { _genres[0], _genres[1], _genres[6] } },
-            new Title { Type = _types[0], PrimaryTitle = "Interstellar", OriginalTitle = "Interstellar", IsAdult = false, StartYear = 2014, RuntimeMinutes = 169, Genres = new List<Genre> { _genres[1], _genres[3], _genres[6] } },
-            new Title { Type = _types[0], PrimaryTitle = "Dunkirk", OriginalTitle = "Dunkirk", IsAdult = false, StartYear = 2017, RuntimeMinutes = 106, Genres = new List<Genre> { _genres[2], _genres[6] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Dark Knight", OriginalTitle = "The Dark Knight", IsAdult = false, StartYear = 2008, RuntimeMinutes = 152, Genres = new List<Genre> { _genres[0], _genres[8] } },
-            new Title { Type = _types[0], PrimaryTitle = "Batman Begins", OriginalTitle = "Batman Begins", IsAdult = false, StartYear = 2005, RuntimeMinutes = 140, Genres = new List<Genre> { _genres[0], _genres[8] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Dark Knight Rises", OriginalTitle = "The Dark Knight Rises", IsAdult = false, StartYear = 2012, RuntimeMinutes = 164, Genres = new List<Genre> { _genres[0], _genres[8] } },
-            new Title { Type = _types[0], PrimaryTitle = "Memento", OriginalTitle = "Memento", IsAdult = false, StartYear = 2000, RuntimeMinutes = 113, Genres = new List<Genre> { _genres[4], _genres[5] } },
-            new Title { Type = _types[0], PrimaryTitle = "Tenet", OriginalTitle = "Tenet", IsAdult = false, StartYear = 2020, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[5] } },
-            new Title { Type = _types[0], PrimaryTitle = "Insomnia", OriginalTitle = "Insomnia", IsAdult = false, StartYear = 2002, RuntimeMinutes = 118, Genres = new List<Genre> { _genres[2], _genres[5] } },
-            new Title { Type = _types[0], PrimaryTitle = "Following", OriginalTitle = "Following", IsAdult = false, StartYear = 1998, RuntimeMinutes = 69, Genres = new List<Genre> { _genres[2], _genres[5] } },
-            new Title { Type = _types[0], PrimaryTitle = "The Incredibly Long and Unnecessarily Overcomplicated Title That Somehow Got Approved by the Studio and Somehow Managed to Fit on the Movie Poster Without Causing an Absolute Design Disaster", OriginalTitle = "The Longest Movie Title Ever", IsAdult = false, StartYear = 2025, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[3], _genres[9] } },
-
+            new Title { Tconst = "tt0000001", Type = _types[0], PrimaryTitle = "The Matrix", OriginalTitle = "The Matrix", IsAdult = false, StartYear = 1999, RuntimeMinutes = 136, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000002", Type = _types[0], PrimaryTitle = "The Matrix Reloaded", OriginalTitle = "The Matrix Reloaded", IsAdult = false, StartYear = 2003, RuntimeMinutes = 138, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000003", Type = _types[0], PrimaryTitle = "The Matrix Revolutions", OriginalTitle = "The Matrix Revolutions", IsAdult = false, StartYear = 2003, RuntimeMinutes = 129, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000004", Type = _types[0], PrimaryTitle = "The Matrix Resurrections", OriginalTitle = "The Matrix Resurrections", IsAdult = false, StartYear = 2021, RuntimeMinutes = 148, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000005", Type = _types[0], PrimaryTitle = "The Terminator", OriginalTitle = "The Terminator", IsAdult = false, StartYear = 1984, RuntimeMinutes = 107, Genres = new List<Genre> { _genres[0], _genres[4] } },
+            new Title { Tconst = "tt0000006", Type = _types[0], PrimaryTitle = "Terminator 2: Judgment Day", OriginalTitle = "Terminator 2: Judgment Day", IsAdult = false, StartYear = 2003, RuntimeMinutes = 137, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000007", Type = _types[0], PrimaryTitle = "Terminator 3: Rise of the Machines", OriginalTitle = "Terminator 3: Rise of the Machines", IsAdult = false, StartYear = 2003, RuntimeMinutes = 109, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000008", Type = _types[0], PrimaryTitle = "Terminator Salvation", OriginalTitle = "Terminator Salvation", IsAdult = false, StartYear = 2009, RuntimeMinutes = 115, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000009", Type = _types[0], PrimaryTitle = "Terminator Genisys", OriginalTitle = "Terminator Genisys", IsAdult = false, StartYear = 2015, RuntimeMinutes = 126, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000010", Type = _types[0], PrimaryTitle = "Terminator: Dark Fate", OriginalTitle = "Terminator: Dark Fate", IsAdult = false, StartYear = 2019, RuntimeMinutes = 128, Genres = new List<Genre> { _genres[0], _genres[3] } },
+            new Title { Tconst = "tt0000011", Type = _types[0], PrimaryTitle = "Inception", OriginalTitle = "Inception", IsAdult = false, StartYear = 2010, RuntimeMinutes = 148, Genres = new List<Genre> { _genres[0], _genres[1], _genres[6] } },
+            new Title { Tconst = "tt0000012", Type = _types[0], PrimaryTitle = "Interstellar", OriginalTitle = "Interstellar", IsAdult = false, StartYear = 2014, RuntimeMinutes = 169, Genres = new List<Genre> { _genres[1], _genres[3], _genres[6] } },
+            new Title { Tconst = "tt0000013", Type = _types[0], PrimaryTitle = "Dunkirk", OriginalTitle = "Dunkirk", IsAdult = false, StartYear = 2017, RuntimeMinutes = 106, Genres = new List<Genre> { _genres[2], _genres[6] } },
+            new Title { Tconst = "tt0000014", Type = _types[0], PrimaryTitle = "The Dark Knight", OriginalTitle = "The Dark Knight", IsAdult = false, StartYear = 2008, RuntimeMinutes = 152, Genres = new List<Genre> { _genres[0], _genres[8] } },
+            new Title { Tconst = "tt0000015", Type = _types[0], PrimaryTitle = "Batman Begins", OriginalTitle = "Batman Begins", IsAdult = false, StartYear = 2005, RuntimeMinutes = 140, Genres = new List<Genre> { _genres[0], _genres[8] } },
+            new Title { Tconst = "tt0000016", Type = _types[0], PrimaryTitle = "The Dark Knight Rises", OriginalTitle = "The Dark Knight Rises", IsAdult = false, StartYear = 2012, RuntimeMinutes = 164, Genres = new List<Genre> { _genres[0], _genres[8] } },
+            new Title { Tconst = "tt0000017", Type = _types[0], PrimaryTitle = "Memento", OriginalTitle = "Memento", IsAdult = false, StartYear = 2000, RuntimeMinutes = 113, Genres = new List<Genre> { _genres[4], _genres[5] } },
+            new Title { Tconst = "tt0000018", Type = _types[0], PrimaryTitle = "Tenet", OriginalTitle = "Tenet", IsAdult = false, StartYear = 2020, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[5] } },
+            new Title { Tconst = "tt0000019", Type = _types[0], PrimaryTitle = "Insomnia", OriginalTitle = "Insomnia", IsAdult = false, StartYear = 2002, RuntimeMinutes = 118, Genres = new List<Genre> { _genres[2], _genres[5] } },
+            new Title { Tconst = "tt0000020", Type = _types[0], PrimaryTitle = "Following", OriginalTitle = "Following", IsAdult = false, StartYear = 1998, RuntimeMinutes = 69, Genres = new List<Genre> { _genres[2], _genres[5] } },
+            new Title { Tconst = "tt0000021", Type = _types[0], PrimaryTitle = "The Incredibly Long and Unnecessarily Overcomplicated Title That Somehow Got Approved by the Studio and Somehow Managed to Fit on the Movie Poster Without Causing an Absolute Design Disaster", OriginalTitle = "The Longest Movie Title Ever", IsAdult = false, StartYear = 2025, RuntimeMinutes = 150, Genres = new List<Genre> { _genres[0], _genres[3], _genres[9] } }
         };
-
 
         public void AddTitle(Title title)
         {
@@ -74,10 +72,13 @@ namespace Data
             Console.WriteLine("Title added successfully");
         }
 
-        public List<Title> GetTitles(string title)
+        public List<Title> GetTitles(string title, int offset, int pageSize)
         {
             return _titles
                 .Where(m => m.PrimaryTitle.Contains(title, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(m => m.PrimaryTitle)
+                .Skip(offset)
+                .Take(pageSize)
                 .ToList();
         }
 

@@ -2,6 +2,7 @@
 {
     public class Title
     {
+        public string Tconst { get; set; } = string.Empty;
         public required IMDBType Type { get; set; }
         public required string PrimaryTitle { get; set; }
         public required string OriginalTitle { get; set; }
