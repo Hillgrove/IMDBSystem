@@ -14,6 +14,7 @@ namespace Data
             _connectionString = connectionString;
         }
 
+
         public void AddName(Name name)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -27,7 +28,6 @@ namespace Data
             conn.Open();
             cmd.ExecuteNonQuery();
         }
-
 
         public List<Name> GetNames(string name, int offset, int pageSize)
         {

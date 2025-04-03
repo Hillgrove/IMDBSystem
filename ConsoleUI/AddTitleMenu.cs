@@ -48,7 +48,7 @@ namespace ConsoleUI
                     continue;
 
                 // Confirm and Add Title
-                Title newTitle = new Title
+                var newTitle = new Title
                 {
                     Type = titleType,
                     PrimaryTitle = primaryTitle,

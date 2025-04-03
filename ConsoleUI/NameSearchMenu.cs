@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ConsoleUI
 {
-    internal class PersonSearchMenu
+    internal class NameSearchMenu
     {
         private const int _pageSize = 10;
         private int _currentPage = 0;
@@ -12,7 +12,7 @@ namespace ConsoleUI
 
         private readonly INameRepository _repository;
 
-        public PersonSearchMenu(INameRepository repository)
+        public NameSearchMenu(INameRepository repository)
         {
             _repository = repository;
         }
@@ -77,8 +77,6 @@ namespace ConsoleUI
                 }
             }
         }
-
-
 
         private void DisplayMenuHeader()
         {
