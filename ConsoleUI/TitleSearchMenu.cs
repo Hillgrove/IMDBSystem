@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using System.Diagnostics;
 
 namespace ConsoleUI
 {
@@ -30,20 +31,44 @@ namespace ConsoleUI
                     continue;
                 }
 
-                _titles = _repository.GetTitles(wildcard);
-                if (_titles.Count == 0)
-                {
-                    if (!HandleNoTitlesFound()) return;
-                    continue;
-                }
-
                 _currentPage = 0;
+                
                 while (true)
                 {
-                    DisplayResultsPage(_titles, wildcard);
-                    string? navChoice = GetNavigationInput();
+                    int offset = _currentPage * _pageSize;
 
+                    Stopwatch stopwatch = Stopwatch.StartNew();
+
+                    RunWithSpinner(() =>
+                    {
+                        _titles = _repository.GetTitles(wildcard, _currentPage * _pageSize, _pageSize);
+                    });
+
+                    stopwatch.Stop();
+
+                    long elapsedMs = stopwatch.ElapsedMilliseconds;
+
+                    if (_titles.Count == 0)
+                    {
+                        if (_currentPage == 0)
+                        {
+                            if (!HandleNoTitlesFound()) return;
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nNo more results.");
+                            Console.ReadKey();
+                            _currentPage--;
+                            continue;
+                        }
+                    }
+
+                    DisplayResultsPage(_titles, wildcard, elapsedMs);
+                    
+                    string? navChoice = GetNavigationInput();
                     bool shouldQuit = HandleNavigationChoice(navChoice);
+                    
                     if (shouldQuit)
                         return;
 
@@ -84,27 +109,21 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private void DisplayResultsPage(List<Title> titles, string wildcard)
+        private void DisplayResultsPage(List<Title> titles, string wildcard, long elapsedMs)
         {
             Console.Clear();
-            int startIndex = _currentPage * _pageSize;
-            int endIndex = Math.Min(startIndex + _pageSize, titles.Count);
-
             Console.WriteLine();
             Console.WriteLine("=========================================================");
             Console.WriteLine($"                   Results for: \"{wildcard}\"                   ");
-            Console.WriteLine($"                       Page {_currentPage + 1} of {Math.Ceiling((double)titles.Count / _pageSize)}");
+            Console.WriteLine($"                   Page {_currentPage + 1}   ({elapsedMs} ms)");
             Console.WriteLine("=========================================================");
             Console.WriteLine();
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = 0; i < titles.Count; i++)
             {
                 string displayTitle = titles[i].PrimaryTitle;
-                int maxWidth = 50; // Adjusted width to accommodate the index and brackets
-                if (displayTitle.Length > maxWidth)
-                {
-                    displayTitle = displayTitle.Substring(0, maxWidth - 3) + "...";
-                }
+                if (displayTitle.Length > 50)
+                    displayTitle = displayTitle[..47] + "...";
 
                 Console.WriteLine($"[{i + 1}] {displayTitle}");
             }
@@ -140,7 +159,7 @@ namespace ConsoleUI
             switch (navChoice)
             {
                 case "n":
-                    if ((_currentPage + 1) * _pageSize < _titles.Count) _currentPage++;
+                    _currentPage++;
                     break;
                 case "p":
                     if (_currentPage > 0) _currentPage--;
@@ -305,7 +324,6 @@ namespace ConsoleUI
             return updated;
         }
 
-
         private T PromptSelect<T>(string label, List<T> options, T current, string titleName) where T : class
         {
             while (true)
@@ -336,7 +354,6 @@ namespace ConsoleUI
             }
         }
 
-
         private string PromptString(string label, string current, string titleName)
         {
             Console.Clear();
@@ -349,8 +366,6 @@ namespace ConsoleUI
             string? input = Console.ReadLine()?.Trim();
             return string.IsNullOrEmpty(input) ? current : input;
         }
-
-
 
         private bool PromptBool(string label, bool current, string titleName)
         {
@@ -374,7 +389,6 @@ namespace ConsoleUI
             }
         }
 
-
         private int? PromptInt(string label, int? current, string titleName)
         {
             Console.Clear();
@@ -394,7 +408,6 @@ namespace ConsoleUI
             Console.ReadKey();
             return current;
         }
-
 
         private List<Genre> PromptMultiSelect(string label, List<Genre> allGenres, List<Genre> current, int max, string titleName)
         {
@@ -422,6 +435,28 @@ namespace ConsoleUI
             }
 
             return selected.Count > 0 ? selected : current;
+        }
+
+        private void RunWithSpinner(Action action)
+        {
+            using var spinnerCts = new CancellationTokenSource();
+
+            var spinnerThread = new Thread(() =>
+            {
+                string[] sequence = { "|", "/", "-", "\\" };
+                int i = 0;
+                while (!spinnerCts.Token.IsCancellationRequested)
+                {
+                    Console.Write($"\rSearching... {sequence[i++ % sequence.Length]}");
+                    Thread.Sleep(100);
+                }
+                Console.Write("\rSearching... done.       \n");
+            });
+
+            spinnerThread.Start();
+            action();
+            spinnerCts.Cancel();
+            spinnerThread.Join();
         }
     }
 }
