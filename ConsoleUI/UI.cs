@@ -8,7 +8,7 @@ namespace ConsoleUI
         private readonly INameRepository _nameRepository;
 
         private readonly TitleSearchMenu _titleSearchMenu;
-        private readonly PersonSearchMenu _personSearchMenu;
+        private readonly NameSearchMenu _nameSearchMenu;
         private readonly AddTitleMenu _addTitleMenu;
         private readonly AddNameMenu _addNameMenu;
 
@@ -18,7 +18,7 @@ namespace ConsoleUI
             _nameRepository = nameRepository;
 
             _titleSearchMenu = new TitleSearchMenu(_titleRepository);
-            _personSearchMenu = new PersonSearchMenu(_nameRepository);
+            _nameSearchMenu = new NameSearchMenu(_nameRepository);
             _addTitleMenu = new AddTitleMenu(_titleRepository);
             _addNameMenu = new AddNameMenu(_nameRepository);
         }
@@ -40,26 +40,14 @@ namespace ConsoleUI
                         break;
 
                     case "2":
-                        _personSearchMenu.Execute();
+                        _nameSearchMenu.Execute();
                         break;
 
                     case "3":
-                        Console.WriteLine("Not Implemented");
-                        Console.Write("Press any key to continue...");
-                        Console.ReadKey();
-                        break;
-
-                    case "4":
-                        Console.WriteLine("Not Implemented");
-                        Console.Write("Press any key to continue...");
-                        Console.ReadKey();
-                        break;
-
-                    case "5":
                         _addTitleMenu.Execute();
                         break;
 
-                    case "6":
+                    case "4":
                         _addNameMenu.Execute();
                         break;
 
@@ -81,10 +69,8 @@ namespace ConsoleUI
 
             Console.WriteLine($"  [1] Search title by wildcard and update/delete found title");
             Console.WriteLine($"  [2] Search person by wildcard");
-            Console.WriteLine($"  [3] (Ekstra) See all information about specific title");
-            Console.WriteLine($"  [4] (Ekstra) See all information about a specific person");
-            Console.WriteLine($"  [5] Add title to database");
-            Console.WriteLine($"  [6] Add person to database");
+            Console.WriteLine($"  [3] Add title to database");
+            Console.WriteLine($"  [4] Add person to database");
 
             Console.WriteLine($"  [Q] Quit");
 
