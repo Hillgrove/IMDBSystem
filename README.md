@@ -46,16 +46,6 @@ Brugerfladen er en konsolapplikation, hvor følgende funktioner er tilgængelige
 - Ingen dynamisk SQL – dermed sikret mod SQL Injection
 - Brugeradgang er begrænset via rettigheder (ikke implementeret i kode, men beskrevet i dokumentation)
 
-## 🚀 Sådan kører du systemet
-
-1. Tilføj din `Default` connection string via **User Secrets**.
-2. Sørg for at databasen indeholder de nødvendige stored procedures.
-3. Start programmet via `Program.cs`.
-
-```bash
-dotnet run
-```
-
 ## 📁 Filstruktur (udvalg)
 
 | Fil                      | Beskrivelse                                       |
