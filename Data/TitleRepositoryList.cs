@@ -72,15 +72,21 @@ namespace Data
             Console.WriteLine("Title added successfully");
         }
 
-        public List<Title> GetTitles(string title, int offset, int pageSize)
+        public List<Title> GetTitles(string title, int offset, int pageSize, IMDBType? type)
         {
-            return _titles
-                .Where(m => m.PrimaryTitle.Contains(title, StringComparison.OrdinalIgnoreCase))
+            var filtered = _titles
+                .Where(m => m.PrimaryTitle.Contains(title, StringComparison.OrdinalIgnoreCase));
+
+            if (type != null)
+                filtered = filtered.Where(m => m.Type.Name.Equals(type.Name, StringComparison.OrdinalIgnoreCase));
+
+            return filtered
                 .OrderBy(m => m.PrimaryTitle)
                 .Skip(offset)
                 .Take(pageSize)
                 .ToList();
         }
+
 
         public List<IMDBType> GetTypes()
         {

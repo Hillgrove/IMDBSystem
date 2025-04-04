@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using ConsoleUI.Helpers;
+using Data;
 
 namespace ConsoleUI
 {
@@ -61,20 +62,16 @@ namespace ConsoleUI
 
         private void PrintMainMenu()
         {
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.WriteLine("            Welcome to the Magical IMDB System           ");
-            Console.WriteLine("=========================================================");
-            Console.WriteLine();
+            ConsoleFormatter.DisplayMenuHeader("Welcome to the Magical IMDB System");
 
-            Console.WriteLine($"  [1] Search title by wildcard and update/delete found title");
-            Console.WriteLine($"  [2] Search person by wildcard");
-            Console.WriteLine($"  [3] Add title to database");
-            Console.WriteLine($"  [4] Add person to database");
+            Console.WriteLine($" [1] Search title by wildcard and update/delete found title");
+            Console.WriteLine($" [2] Search person by wildcard");
+            Console.WriteLine($" [3] Add title to database");
+            Console.WriteLine($" [4] Add person to database");
 
-            Console.WriteLine($"  [Q] Quit");
+            Console.WriteLine($" [Q] Quit");
 
-            Console.WriteLine("\n=========================================================");
+            Console.WriteLine("\n======================================================================");
             Console.WriteLine();
             Console.Write("Please enter action: ");
         }

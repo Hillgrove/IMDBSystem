@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using ConsoleUI.Helpers;
+using Data;
 using Data.Models;
 using System.Diagnostics;
 
@@ -21,10 +22,9 @@ namespace ConsoleUI
         {
             while (true)
             {
-                Console.Clear();
-                DisplayMenuHeader();
+                IMDBType? selectedType = GetOptionalTitleType();
+                string wildcard = GetSearchString();
 
-                string wildcard = GetSearchInput();
                 if (string.IsNullOrEmpty(wildcard))
                 {
                     DisplayInvalidInputMessage();
@@ -36,14 +36,12 @@ namespace ConsoleUI
                 while (true)
                 {
                     int offset = _currentPage * _pageSize;
-
-                    Stopwatch stopwatch = Stopwatch.StartNew();
-
+                    
+                    Stopwatch stopwatch = Stopwatch.StartNew();                 
                     RunWithSpinner(() =>
                     {
-                        _titles = _repository.GetTitles(wildcard, _currentPage * _pageSize, _pageSize);
+                        _titles = _repository.GetTitles(wildcard, _currentPage * _pageSize, _pageSize, selectedType);
                     });
-
                     stopwatch.Stop();
 
                     long elapsedMs = stopwatch.ElapsedMilliseconds;
@@ -64,7 +62,7 @@ namespace ConsoleUI
                         }
                     }
 
-                    DisplayResultsPage(_titles, wildcard, elapsedMs);
+                    DisplayResultsPage(_titles, wildcard, elapsedMs, selectedType);
                     
                     string? navChoice = GetNavigationInput();
                     bool shouldQuit = HandleNavigationChoice(navChoice);
@@ -78,27 +76,73 @@ namespace ConsoleUI
             }
         }
 
-        private void DisplayMenuHeader()
+        private IMDBType? GetOptionalTitleType()
         {
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.WriteLine("                  Search Title By Name                   ");
-            Console.WriteLine("=========================================================");
-            Console.WriteLine();
+            var types = _repository.GetTypes();
+
+            while (true)
+            {
+                Console.Clear();
+                ConsoleFormatter.DisplayMenuHeader("Titles Search");
+                Console.WriteLine("Optional: Select Title Type (or press Enter to search all types):");
+                Console.WriteLine();
+
+                for (int i = 0; i < types.Count; i++)
+                    Console.WriteLine($" [{i + 1}] {types[i].Name}");
+
+                Console.Write("\nYour choice: ");
+                string? input = Console.ReadLine()?.Trim();
+
+                if (string.IsNullOrEmpty(input))
+                    return null;
+
+                if (int.TryParse(input, out int index) && index >= 1 && index <= types.Count)
+                    return types[index - 1];
+
+                Console.WriteLine("Invalid input. Press any key to retry...");
+                Console.ReadKey();
+            }
         }
 
-        private string GetSearchInput()
+        private string GetSearchString()
         {
+            Console.Clear();
+            ConsoleFormatter.DisplayMenuHeader("Titles Search");
+
             Console.Write("Enter search parameter (e.g. \"The Godfather\"): ");
             return Console.ReadLine()?.Trim().ToLower() ?? "";
         }
 
-        private void DisplayInvalidInputMessage()
+        private void DisplayResultsPage(List<Title> titles, string wildcard, long elapsedMs, IMDBType? selectedType)
         {
-            Console.WriteLine("\nInvalid input. Try again...");
-            Console.ReadKey();
-        }
+            string typeLabel = selectedType != null ? $" (type: {selectedType.Name})" : "";
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("======================================================================");           
+            Console.WriteLine($"     Results for: \"{wildcard}\"{typeLabel}");
+            Console.WriteLine($"     Page {_currentPage + 1}   ({elapsedMs} ms)");
+            Console.WriteLine("======================================================================");
+            Console.WriteLine();
 
+            Console.WriteLine(" #   Title                                Type       Year    Minutes");
+            Console.WriteLine("----------------------------------------------------------------------");
+
+            for (int i = 0; i < titles.Count; i++)
+            {
+                var t = titles[i];
+                string title = t.PrimaryTitle.Length > 36 ? t.PrimaryTitle[..33] + "..." : t.PrimaryTitle;
+                string type = t.Type?.Name ?? "unknown";
+                string year = t.StartYear?.ToString() ?? "????";
+                string runtime = t.RuntimeMinutes.HasValue ? $"{t.RuntimeMinutes}" : "N/A";
+
+                Console.WriteLine($"[{(i + 1),-2}] {title,-36} {type,-10} {year,-5} {runtime,7}");
+            }
+
+            Console.WriteLine("\nEnter the number to select a title.");
+            Console.WriteLine();
+            Console.WriteLine("[N] Next Page  [P] Previous Page  [B] Back to Search  [Q] Quit to Main Menu");
+        }
+        
         private bool HandleNoTitlesFound()
         {
             Console.WriteLine("\nNo titles found with the given name.");
@@ -109,29 +153,10 @@ namespace ConsoleUI
             return retryChoice != "q";
         }
 
-        private void DisplayResultsPage(List<Title> titles, string wildcard, long elapsedMs)
+        private void DisplayInvalidInputMessage()
         {
-            Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.WriteLine($"                   Results for: \"{wildcard}\"                   ");
-            Console.WriteLine($"                   Page {_currentPage + 1}   ({elapsedMs} ms)");
-            Console.WriteLine("=========================================================");
-            Console.WriteLine();
-
-            for (int i = 0; i < titles.Count; i++)
-            {
-                string displayTitle = titles[i].PrimaryTitle;
-                if (displayTitle.Length > 50)
-                    displayTitle = displayTitle[..47] + "...";
-
-                Console.WriteLine($"[{i + 1}] {displayTitle}");
-            }
-
-            Console.WriteLine("\nPage Navigation:");
-            Console.WriteLine("Enter the number to select a title.");
-            Console.WriteLine();
-            Console.WriteLine("[N] Next Page  [P] Previous Page  [B] Back to Search  [Q] Quit to Main Menu");
+            Console.WriteLine("\nInvalid input. Try again...");
+            Console.ReadKey();
         }
 
         private string? GetNavigationInput()
@@ -184,16 +209,16 @@ namespace ConsoleUI
             {
                 Console.Clear();
 
-                PrintCenteredHeader(selectedTitle.PrimaryTitle);
+                ConsoleFormatter.DisplayMenuHeader(selectedTitle.PrimaryTitle);
 
-                PrintWrappedLine("Title Type      : " + selectedTitle.Type.Name);
-                PrintWrappedLine("Primary Title   : " + selectedTitle.PrimaryTitle);
-                PrintWrappedLine("Original Title  : " + selectedTitle.OriginalTitle);
-                PrintWrappedLine("Adult Content   : " + (selectedTitle.IsAdult ? "Yes" : "No"));
-                PrintWrappedLine("Release Year    : " + (selectedTitle.StartYear.HasValue ? selectedTitle.StartYear.ToString() : "Unknown"));
-                PrintWrappedLine("End Year        : " + (selectedTitle.EndYear.HasValue ? selectedTitle.EndYear.ToString() : "N/A"));
-                PrintWrappedLine("Runtime         : " + (selectedTitle.RuntimeMinutes.HasValue ? $"{selectedTitle.RuntimeMinutes} minutes" : "N/A"));
-                PrintWrappedLine("Genres          : " + (selectedTitle.Genres.Count > 0 ? string.Join(", ", selectedTitle.Genres.Select(g => g.Name)) : "None"));
+                ConsoleFormatter.PrintWrappedLine("Title Type      : " + selectedTitle.Type.Name);
+                ConsoleFormatter.PrintWrappedLine("Primary Title   : " + selectedTitle.PrimaryTitle);
+                ConsoleFormatter.PrintWrappedLine("Original Title  : " + selectedTitle.OriginalTitle);
+                ConsoleFormatter.PrintWrappedLine("Adult Content   : " + (selectedTitle.IsAdult ? "Yes" : "No"));
+                ConsoleFormatter.PrintWrappedLine("Release Year    : " + (selectedTitle.StartYear.HasValue ? selectedTitle.StartYear.ToString() : "Unknown"));
+                ConsoleFormatter.PrintWrappedLine("End Year        : " + (selectedTitle.EndYear.HasValue ? selectedTitle.EndYear.ToString() : "N/A"));
+                ConsoleFormatter.PrintWrappedLine("Runtime         : " + (selectedTitle.RuntimeMinutes.HasValue ? $"{selectedTitle.RuntimeMinutes} minutes" : "N/A"));
+                ConsoleFormatter.PrintWrappedLine("Genres          : " + (selectedTitle.Genres.Count > 0 ? string.Join(", ", selectedTitle.Genres.Select(g => g.Name)) : "None"));
 
                 Console.WriteLine();
                 Console.WriteLine("[U] Update title   [D] Delete title   [B] Back");
@@ -238,62 +263,6 @@ namespace ConsoleUI
             
         }
 
-        private void PrintCenteredHeader(string title)
-        {
-            int totalWidth = 57;
-            int maxTitleWidth = totalWidth - 2; // To account for padding
-
-            // Break long titles into multiple lines
-            var lines = new List<string>();
-            while (title.Length > maxTitleWidth)
-            {
-                int breakIndex = title.LastIndexOf(' ', maxTitleWidth);
-                if (breakIndex == -1) breakIndex = maxTitleWidth;
-                lines.Add(title.Substring(0, breakIndex));
-                title = title.Substring(breakIndex).TrimStart();
-            }
-            lines.Add(title); // Add the remaining part
-
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-
-            foreach (string line in lines)
-            {
-                int padding = (totalWidth - line.Length) / 2;
-                Console.WriteLine(line.PadLeft(padding + line.Length).PadRight(totalWidth));
-            }
-
-            Console.WriteLine("=========================================================");
-            Console.WriteLine();
-        }
-
-        private void PrintWrappedLine(string text, int maxWidth = 55)
-        {
-            int labelWidth = text.IndexOf(':') + 2; // Find the position after the colon and space
-            int availableWidth = maxWidth - labelWidth;
-
-            // Print the first line directly
-            if (text.Length <= maxWidth)
-            {
-                Console.WriteLine(text);
-                return;
-            }
-
-            int breakIndex = text.LastIndexOf(' ', maxWidth);
-            if (breakIndex == -1) breakIndex = maxWidth;
-            Console.WriteLine(text.Substring(0, breakIndex));
-            text = text.Substring(breakIndex).TrimStart();
-
-            // Print remaining lines with alignment
-            while (text.Length > 0)
-            {
-                breakIndex = text.Length > availableWidth ? text.LastIndexOf(' ', availableWidth) : text.Length;
-                if (breakIndex == -1) breakIndex = availableWidth;
-                Console.WriteLine(new string(' ', labelWidth) + text.Substring(0, breakIndex).Trim());
-                text = text.Substring(breakIndex).TrimStart();
-            }
-        }
-
         private Title PromptForTitleUpdate(Title old)
         {
             var types = _repository.GetTypes();
@@ -328,10 +297,7 @@ namespace ConsoleUI
         {
             while (true)
             {
-                Console.Clear();
-                DisplayMenuHeader();
-                Console.WriteLine($"Updating: {titleName}");
-                Console.WriteLine();
+                ConsoleFormatter.DisplayMenuHeader($"Updating {titleName}");
                 Console.WriteLine("Press Enter without input to keep current value.");
                 Console.WriteLine();
                 Console.WriteLine($"{label} (current: {current})");
@@ -356,10 +322,7 @@ namespace ConsoleUI
 
         private string PromptString(string label, string current, string titleName)
         {
-            Console.Clear();
-            DisplayMenuHeader();
-            Console.WriteLine($"Updating: {titleName}");
-            Console.WriteLine();
+            ConsoleFormatter.DisplayMenuHeader($"Updating {titleName}");
             Console.WriteLine("Press Enter without input to keep current value.");
             Console.WriteLine();
             Console.Write($"{label} (current: \"{current}\"): ");
@@ -371,10 +334,7 @@ namespace ConsoleUI
         {
             while (true)
             {
-                Console.Clear();
-                DisplayMenuHeader();
-                Console.WriteLine($"Updating: {titleName}");
-                Console.WriteLine();
+                ConsoleFormatter.DisplayMenuHeader($"Updating {titleName}");
                 Console.WriteLine("Press Enter without input to keep current value.");
                 Console.WriteLine();
                 Console.Write($"{label} (current: {(current ? "Y" : "N")}) [Y/N]: ");
@@ -391,10 +351,7 @@ namespace ConsoleUI
 
         private int? PromptInt(string label, int? current, string titleName)
         {
-            Console.Clear();
-            DisplayMenuHeader();
-            Console.WriteLine($"Updating: {titleName}");
-            Console.WriteLine();
+            ConsoleFormatter.DisplayMenuHeader($"Updating {titleName}");
             Console.WriteLine("Press Enter without input to keep current value.");
             Console.WriteLine();
             Console.WriteLine($"Updating: {(current.HasValue ? current.ToString() : "N/A")}");
@@ -414,8 +371,7 @@ namespace ConsoleUI
             var selected = new List<Genre>();
             while (selected.Count < max)
             {
-                Console.Clear();
-                DisplayMenuHeader();
+                ConsoleFormatter.DisplayMenuHeader($"Updating {titleName}");
                 Console.WriteLine($"{label} (current: {string.Join(", ", current.Select(g => g.Name))})");
                 Console.WriteLine();
 
@@ -458,5 +414,7 @@ namespace ConsoleUI
             spinnerCts.Cancel();
             spinnerThread.Join();
         }
+
+
     }
 }

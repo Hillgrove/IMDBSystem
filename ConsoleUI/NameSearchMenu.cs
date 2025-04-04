@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using ConsoleUI.Helpers;
+using Data;
 using Data.Models;
 using System.Diagnostics;
 
@@ -21,8 +22,7 @@ namespace ConsoleUI
         {
             while (true)
             {
-                Console.Clear();
-                DisplayMenuHeader();
+                ConsoleFormatter.DisplayMenuHeader($"Names Search");
 
                 string wildcard = GetSearchInput();
                 if (string.IsNullOrEmpty(wildcard))
@@ -78,15 +78,6 @@ namespace ConsoleUI
             }
         }
 
-        private void DisplayMenuHeader()
-        {
-            Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.WriteLine("                       Search Persons                    ");
-            Console.WriteLine("=========================================================");
-            Console.WriteLine();
-        }
-
         private string GetSearchInput()
         {
             Console.Write("Enter search parameter (e.g. \"Keanu\"): ");
@@ -114,16 +105,16 @@ namespace ConsoleUI
             Console.Clear();
 
             Console.WriteLine();
-            Console.WriteLine("=========================================================");
-            Console.WriteLine($"                   Results for: \"{wildcard}\"                   ");
-            Console.WriteLine($"                   Page {_currentPage + 1}   ({elapsedMs} ms)");
-            Console.WriteLine("=========================================================");
+            Console.WriteLine("======================================================================");
+            Console.WriteLine($"     Results for: \"{wildcard}\"");
+            Console.WriteLine($"     Page {_currentPage + 1}   ({elapsedMs} ms)");
+            Console.WriteLine("======================================================================");
 
             Console.WriteLine();
 
             for (int i = 0; i < persons.Count; i++)
             {
-                Console.WriteLine($"[{i + 1}] {persons[i].PrimaryName}");
+                Console.WriteLine($"[{(i + 1),-2}] {persons[i].PrimaryName}");
             }
 
             Console.WriteLine("\nPage Navigation:");

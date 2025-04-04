@@ -54,6 +54,7 @@ namespace ConsoleUI
                     PrimaryTitle = primaryTitle,
                     OriginalTitle = originalTitle,
                     IsAdult = isAdult,
+                    StartYear = startYear,
                     EndYear = endYear,
                     RuntimeMinutes = runtimeMinutes,
                     Genres = selectedGenres

@@ -21,6 +21,7 @@ namespace Data
 
             cmd.Parameters.AddWithValue("@PrimaryTitle", title.PrimaryTitle);
             cmd.Parameters.AddWithValue("@OriginalTitle", title.OriginalTitle);
+            cmd.Parameters.AddWithValue("@TitleType", title.Type.Name);
             cmd.Parameters.AddWithValue("@IsAdult", title.IsAdult);
             cmd.Parameters.AddWithValue("@StartYear", title.StartYear ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@EndYear", title.EndYear ?? (object)DBNull.Value);
@@ -43,17 +44,18 @@ namespace Data
             cmd.ExecuteNonQuery();
         }
 
-        public List<Title> GetTitles(string title, int offset, int pageSize)
+        public List<Title> GetTitles(string title, int offset, int pageSize, IMDBType? type)
         {
             var titles = new List<Title>();
 
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("dbo.SearchMoviesSorted", conn);
+            using var cmd = new SqlCommand("dbo.SearchTitlesSorted", conn);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@SearchTerm", title);
             cmd.Parameters.AddWithValue("@Offset", offset);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
+            cmd.Parameters.AddWithValue("@TitleType", (object?)type?.Name ?? DBNull.Value);
 
             conn.Open();
             using var reader = cmd.ExecuteReader();
@@ -86,6 +88,7 @@ namespace Data
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@Tconst", original.Tconst);
+            cmd.Parameters.AddWithValue("@TitleType", updated.Type.Name);
             cmd.Parameters.AddWithValue("@PrimaryTitle", updated.PrimaryTitle);
             cmd.Parameters.AddWithValue("@OriginalTitle", updated.OriginalTitle);
             cmd.Parameters.AddWithValue("@IsAdult", updated.IsAdult);
@@ -103,7 +106,7 @@ namespace Data
             var types = new List<IMDBType>();
 
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT Id, Name FROM dbo.AllTitleTypes", conn);
+            using var cmd = new SqlCommand("SELECT Id, Name FROM dbo.AllTypes", conn);
 
             conn.Open();
             using var reader = cmd.ExecuteReader();
