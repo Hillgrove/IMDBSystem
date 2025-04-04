@@ -16,7 +16,7 @@ namespace Data
         public void AddTitle(Title title)
         {
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("dbo.AddMovie", conn);
+            using var cmd = new SqlCommand("dbo.AddTitle", conn);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@PrimaryTitle", title.PrimaryTitle);
@@ -35,7 +35,7 @@ namespace Data
         public void DeleteTitle(Title title)
         {
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("dbo.DeleteMovie", conn); // Brug din valgte sletteprocedure
+            using var cmd = new SqlCommand("dbo.DeleteTitle", conn); // Brug din valgte sletteprocedure
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@Tconst", title.Tconst );
@@ -84,7 +84,7 @@ namespace Data
         public void UpdateTitle(Title original, Title updated)
         {
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("dbo.UpdateMovie", conn);
+            using var cmd = new SqlCommand("dbo.UpdateTitle", conn);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@Tconst", original.Tconst);
