@@ -1,5 +1,7 @@
-## IMDB System – 4. Semester Datamatiker  
-**Valgfag: Advanced Databases**
+# 🎬 IMDB System – Film & Seriedata med Struktur
+
+### 4. Semester Obligatorisk Opgave – Forår 2025  
+**Valgfag:** Advanced Databases
 
 Dette projekt er en del af den obligatoriske databaseopgave på 4. semester og simulerer et forsimplet IMDB-system, hvor brugeren kan søge i titler og personer, samt tilføje, opdatere og slette titler.
 
