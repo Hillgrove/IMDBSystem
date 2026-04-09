@@ -7,7 +7,7 @@ namespace ConsoleUI
 {
     internal class NameSearchMenu
     {
-        private const int _pageSize = 10;
+        private const int _pageSize = 50;
         private int _currentPage = 0;
         private List<Name> _names = new List<Name>();
 
